@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 1</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/board.jpeg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Explore the Artemis Board and Bluetooth</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on Feb 6, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <p>The purpose of this part of the lab is to setup and become familiar with the Arduino IDE, the Artemis board and the Bluetooth Low Energy Module. </p>
+                        <p>Let's explain these concepts one by one: </p>
+                        <p>First, in order to control the behavior of a robot, we need a "controller" that could send commands to the robot and receive data from it. In this course, the "controller" we are using is the SparkFun RedBoard Artemis Nano board. Click <a href="https://www.sparkfun.com/products/15443" class="link-primary">here</a> to learn more about the board.</p>
+                        <p>Second, for the purpose of rapidly and wirelessly communicating between robot and the computer, we adopt a Blue Bluetooth Low Energy (BLE) communication technology, also known as Bluetooth Smart, which is a wireless communication technology designed for short-range communication with low power consumption. Here is a <a href="https://www.arduino.cc/reference/en/libraries/arduinoble/" class="link-primary">fantastic summary</a> of Bluetooth Low Energy.</p>
+                        <p>Lastly, we used the Arduino IDE software to write code and program the board. After setting up the Arduino IDE, we could configure the board to either collect data or execute commands received from computer through BLE. The board has a USB-C connector which allows us to pass the code via USB protocol. This <a href="https://learn.sparkfun.com/tutorials/artemis-development-with-arduino?_ga=2.30055167.1151850962.1594648676-1889762036.1574524297&_gac=1.19903818.1593457111.Cj0KCQjwoub3BRC6ARIsABGhnyahkG7hU2v-0bSiAeprvZ7c9v0XEKYdVHIIi_-J-m5YLdDBMc2P_goaAtA4EALw_wcB" class="link-primary">website</a> provides detailed instructions to install Arduino IDE. </p>
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                            <li>1 x SparkFun RedBoard Artemis Nano</li>
+                            <li>1 x USB C-to-C cable</li>
+                        </ul>
+                        <h2 class="section-heading">Setup Arduino IDE</h2>
+
+                        <h2 class="section-heading">Blink it up!</h2>
+                        Like the basic "Hello world" example in every programming language, Arduino has a easy "Blink LED" example that blinks a LED on the board. The code can be found in the Examples->01.Basics->Blink file.
+                        The program is very simple which initializes digital pin LED_BUILTIN as an output first and then put pin voltage high, wait one second and put it low and wait one second. The Blink example is as simple as it shows. But it is also a good sanity check to make sure the Arduino IDE is installed successfully and the Artemis board is setup correctly.</p>
+                        <p>As the video shows, the LED blinks on my Artemis boards without any problems. The default baud rate of communication works well for me.</p>
+                        <iframe width="620" height="415"
+                        src="https://www.youtube.com/embed/WK6t5wHDbOY">
+                        </iframe>
+                        <span class="caption text-muted">LED blinks on my Artemis board</span>
+
+                        <h2 class="section-heading">Serial Communication</h2>
+                        <p>After the basic example, we want to setup the communication between the computer and board so that we can receive the data or information from the Artemis board immediately. This could be very useful for analyze the environment and behavior of the "robot" or simply for debugging if we could see the result right way. Before diving into the wireless communication, we need a wire communication which is faster and more staple. Luckily, the Artemis board has a USB-C port
+                        which allows us to use UART to communicate between the computer and the Artemis board. To simply explain this, UART (Universal Asynchronous Receiver/Transmitter) is a hardware communication protocol facilitating asynchronous serial data transfer between devices. Its prominent feature lies in its asynchronous nature, allowing devices to communicate without being tightly synchronized, making it widely used in various applications where simplicity and reliability are essential, such as in embedded systems and computer peripherals.
+                        However, we do not need to understand the formate of the UART dataline in order to send data since Arduino has done the job for us. The only thing we need to do is to print values on the serial monitor. The code snippet belows shows how easy to print a statement on the serial monitor.</p>
+                    <!-- </p>
+                    <pre>
+                        <code>
+Serial.begin(115200); // setting the baud rate to 115200
+Serial.println("Apollo3 - Serial"); 
+                        </code>
+                    </pre>
+                    <p>  -->
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">Serial.begin(<span style="color: #0000DD; font-weight: bold">115200</span>); <span style="color: #888888">// setting the baud rate to 115200</span>
+Serial.println(<span style="background-color: #fff0f0">&quot;Apollo3 - Serial&quot;</span>); 
+</pre></div>
+
+                    <p>The complete code can be found in the Examples->Apollo3->Serial file.</p>
+                    <a href="#!"><img class="img-fluid" src="assets/img/serial 1.png" alt="..." /></a>
+                    <p>The figure above shows the result I obtained from running the code above. I received a bunch of strange characters. The reason is very simple: I set the Baud rate to 115200Hz for the Baud in the Arduino code, however I set the Baud rate to 9600Hz for my computer. Even though the computer recived the accurate binary information, due to the difference in the Baud rate, it decoded it differently and resulted in strange characters. To Fix this problem, I changed the Baud rate to 115200Hz for the serial monitor and the result is shown in the figure below.</p>
+                    <a href="#!"><img class="img-fluid" src="assets/img/serial 2.png" alt="..." /></a>
+                    <h2 class="section-heading">Analog Read</h2>
+                    <p>The next exmaple is from Examples->Apollo3->Analog Read file which reads the analog value on the board. The Artemis board has an onboard ADC (analog to digital converter) which is able to read analog voltages from 0V to 2V on some of the pads. The Artemis board also has some internal ADC channels that allow you to measure: the internal die temperature, the internal VCC voltage, the internal VSS voltage. In this example, the board reads the raw ADC value of the die temperature sensor and prints the values out. </p>
+                    <p>As show in the first figure below, the raw temperature result is around 32000 and if I put my finger on the chip for a minute, the raw temperature result rose to around 36000. This difference shows that the temperature sensor and ADC works properly!</p>
+                    <a href="#!"><img class="img-fluid" src="assets/img/temp 1.jpeg" alt="..." /></a>
+                    <a href="#!"><img class="img-fluid" src="assets/img/temp 2.jpeg" alt="..." /></a>
+                    <h2 class="section-heading">Time to Sing!</h2>
+                    <p>The next example test the microphone on the Artemis board. The example code is in the Examples->Apollo3->PDM->MicrophoneOutput file which demonstrates how to use the pulse density microphone (PDM) on Artemis boards. The board recives the signal from the PDM, stores them in a 4096 * 16bit array and passes the array to a Fast Fourier Transform method which extracts the frequency spectrum and finds the loudest one to print out.</p>
+                    <p>The video shows the microphone result on the serial monitor. When I am recording this video, the loudest frequency of the surroundings is around hundreds, and when I started to sing (whistle), the frequency rose to one thousand. This shows that the microphone works accurately.</p>
+                    <iframe width="700" height="515"
+                    src="https://www.youtube.com/embed/0LDfAzD4mO4">
+                    </iframe>
+                    "When I am recording this video, the loudest frequency of the surroundings is around hundreds, and when I started to sing (whistle), the frequency rose to one thousand. This shows that the microphone works accurately.</p>
+                    <h2 class="section-heading">Whistle to a LED? Weird</h2>
+                    <p>It is time to challenge ourself and combine what we did in this lab. The goal is to utilize a musical "A" note to control the LED. The code logic is straightforward: the board continuously samples sound from the environment via the microphone and determines the loudest frequency, storing it in a local variable named <code>frequency</code>. Subsequently, the board compares the value of <code>frequency</code> with the standard frequency of the musical "A" note, which is 440Hz. If the frequency equals 440Hz, the LED pin receives a high voltage signal; otherwise, it receives a low voltage signal.</p>
+                    <p>Below is the snippet of the code</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">myPDM.getData(pdmDataBuffer, pdmDataBufferSize);
+    frequency <span style="color: #333333">=</span> getLoudest();
+    <span style="color: #008800; font-weight: bold">if</span>(frequency<span style="color: #333333">==</span><span style="color: #0000DD; font-weight: bold">440</span>){
+      digitalWrite(LED_BUILTIN, HIGH);  <span style="color: #888888"></span>
+    }
+    <span style="color: #008800; font-weight: bold">else</span>{
+      digitalWrite(LED_BUILTIN, LOW);
+    }
+</pre></div>
+
+                    <p>The video demonstrates that the LED remains off in the absence of sound, while it lights up when the musical "A" tone is played. This outcome confirms the correctness of the program.</p>
+
+                    <iframe width="700" height="515"
+                    src="https://www.youtube.com/embed/M-PkQSK1Up0">
+                    </iframe> 
+
+                    <h2 class="section-heading">Bluetooth Magic</h2>
+
+                    <p>We've dabbled in enough C code on the Arduino. Time to switch gears and sprinkle some Python magic into the mix!</p>
+                    <p>The aim of the upcoming labs is to establish wireless communication between the computer and the Artemis board, contrasting it with the USB-C method demonstrated earlier. Wireless communication is crucial for robots, particularly for fast robots—the central topic of this class—where connecting with a wire to a large computer is impractical. Additionally, considering the small size and rapid movement of the robot, a power-efficient wireless communication method is essential to avoid draining a heavy battery. For these reasons, the Bluetooth Low Energy Module emerges as an optimal choice.</p>
+                    <p>At a high level, our approach involves utilizing Python within a Jupyter notebook on the computer to establish communication with the Artemis board. This allows us to transmit diverse commands to the Artemis board and receive information through the BLE module. Concurrently, we employ Arduino to program the board, enabling it to receive commands from and transmit data to the computer via the BLE module.</p>
+
+                    <h2 class="section-heading">Setup</h2>
+                    <p>The setup process is not easy, but luckily, the instructors and TAs for this class provide detailed <a href="https://fastrobotscornell.github.io/FastRobots/labs/Lab1_new.html" class="link-primary">instructions</a> to walk through this process. In summary, the basic steps are: install python and pip --> set up virtual environment for the project --> install necessary python pakages.</p>
+                    <p>Furthermore, it is necessary to download the supporting library into the project directory to facilitate Bluetooth Low Energy (BLE) communication between the computer and the Artemis board. The zip file can be found in the instruction page above.</p>
+                    <p>The supporting codebase is consist of two parts: one part for the python called ble_python and the other one for the Arduino called ble_arduino. </p>
+                    
+                    <p></p>
+                    <p>The Bluetooth technology typically operates across different layers, each layer responsible for specific functions and protocols. The most commonly referenced model for understanding these layers is the OSI (Open Systems Interconnection) model, which conceptualizes communication systems as a stack of layers, with each layer building upon the services provided by the layer below it.  </p>
+                    <p>In the Physical Layer, the devices encode binary information into Electromagnetic waves and send these waves to each other. Since Electromagnetic waves travel as the speed of light, the communication is very fast and efficient. In the application layer, the Bluetooth module provides various profiles and protocols that enable specific applications and services.</p>
+                    <p>In Bluetooth Low Energy (BLE) communication, devices use Universally Unique Identifiers (UUIDs) to organize functionalities into services and characteristics. UUIDs act like unique names for different components, helping devices identify and interact with each other efficiently. Services group related features, such as heart rate monitoring or step counting in a fitness tracker, each assigned a distinct UUID. Within each service, characteristics represent specific attributes like current heart rate, each with its own UUID. When a peripheral device advertises its services and characteristics, a central device scans for them based on their UUIDs. Upon establishing a connection, the central device can access and exchange data with specific characteristics of the peripheral device's services. This organized structure streamlines communication between devices, facilitating tasks such as retrieving sensor data or controlling device functions seamlessly.
+                    </p>
+
+                    <a href="#!"><img class="img-fluid" src="assets/img/Test1.jpeg" alt="..." /></a>
+
+
+                    <h2 class="section-heading">Echo Command</h2>
+                    <p>The first example is to create an <code>Echo</code> command that sends a string value from the computer to the Artemis board, and receives an augmented string on the computer. The implementation is straightforward: begin by utilizing the <code>handle_command</code> function to differentiate the received commands. In the case where the command received is 'Echo', extract the accompanying string and utilize the <code>Estring</code> functions to manipulate and concatenate strings before sending it back. Do not forget to add the Echo in the <em>cmd_types.py</em> file.</p> 
+                    <p>Below is the snippet of the code:</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">case</span> ECHO:
+    <span style="color: #333399; font-weight: bold">char</span> char_arr[MAX_MSG_SIZE];
+    success <span style="color: #333333">=</span> robot_cmd.get_next_value(char_arr);
+    <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>success)
+        <span style="color: #008800; font-weight: bold">return</span>;
+
+    tx_estring_value.clear();
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot;Robot says -&gt; &quot;</span>);
+    tx_estring_value.append(char_arr);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot;:)&quot;</span>);
+    tx_characteristic_string.writeValue(tx_estring_value.c_str());
+
+    Serial.print(<span style="background-color: #fff0f0">&quot;Sent back: &quot;</span>);
+    Serial.println(tx_estring_value.c_str());
+    
+    <span style="color: #008800; font-weight: bold">break</span>;
+</pre></div>
+                    <p>The figure below shows several trials with the <code>Echo</code> command. The board successfully received the command and manipulate the string accordingly.</p>
+                    <img class="img-fluid" src="assets/img/echo 1.png" alt="..." />
+
+                    <h2 class="section-heading">GET_TIME_MILLIS Command</h2>
+                    <p>The task involves implementing a command called <code>GET_TIME_MILLIS</code>, wherein the robot responds by writing a string formatted as 'T:123456' to the string characteristic. The approach is simple: start by using the <code>millis</code> command in Arduino to record the time since the Arduino board turns on in milliseconds. Then, utilize the <code>Estring</code> functions to convert the integer representation of time to a string format before sending it back as a response.</p>
+                    <p>The figure below shows the result of the <code>GET_TIME_MILLIS</code> command which returned the time in milliseconds which can be used as a time reference in the data measurement.</p>
+                    <img class="img-fluid" src="assets/img/get_millis.png" alt="..." />
+
+                    <h2 class="section-heading">Notification Handler</h2>
+                    <p> As demonstrated in the previous examples, data is typically received by the computer only after sending a command, which can become cumbersome when multiple data points are needed and require individual requests. To streamline this process, BLE offers a notification function which  enables peripheral devices to inform central devices about changes in characteristic values without requiring explicit requests. And the <code>notification handler</code> function is to handle the data received after notification.
+                        The task is to setup a notification handler in Python to receive the string value (the BLEStringCharactersitic in Arduino) from the Artemis board. In the callback function, extract the time from the string. According to the BLE library, <code>notification_handler</code> is a function callback which must accept two inputs; the first will be a uuid string object and the second will be the bytearray of the characteristic value. As shown in the code snippet below, notification handler transformed the received byte_array to string and filter out all the digits in the string</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">notification_handler</span>(uuid,byte_array):
+    s <span style="color: #333333">=</span> ble<span style="color: #333333">.</span>bytearray_to_string(byte_array)
+    numeric_filter <span style="color: #333333">=</span> <span style="color: #007020">filter</span>(<span style="color: #007020">str</span><span style="color: #333333">.</span>isdigit, s)
+    num <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&#39;&#39;</span><span style="color: #333333">.</span>join(numeric_filter)
+    <span style="color: #008800; font-weight: bold">print</span>(num)
+</pre></div>
+
+                    <p>To test thie notification handler, I wrote a command in Arduino called <code>GET_TIME_MILLIS_CON</code> which loops through steps to get the current time in milliseconds, send it to the computer to be received and processed by the notification handler. The implementation is the same as <code>GET_TIME_MILLIS</code> except it needs to repeat several times determined by the programner.</p>
+                    <p>The figure below showcases the outcome received by the computer, which is being processed by the <code>notification handler</code>.</p>
+                    <img class="img-fluid" src="assets/img/get_millis_con.png" alt="..." />
+                    <p>Furthermore, we can calculate the effective data transfer rate of this method. First, we started the notification and sent the <code>GET_TIME_MILLIS_CON</code> command to the board which would sent back several time data.  Subsequently, we computed the effective data transfer rate by dividing the total number of bytes sent by the interval time. Take one trial as an example: the computer received 1000 data points, each consisting of seven bytes, between the timestamps of 44102 milliseconds and 51316 milliseconds. 
+                    So, the data transfer rate is 
+                    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    \( {(1000 \times 7)} \div { \frac{51316 - 44102}{1000}} = 970.34 \text{ bytes/second} \).
+                    We repeated this experiment three times and the average effective data transfer rate is 1kb/s.</p>
+
+                    <h2 class="section-heading">Can we send faster?</h2>
+                    <p> In the previous approach, the board incurred overhead in obtaining the current timestamp and transmitting it to the computer during each iteration. To optimize the process, I've created an array of size 1000 to store timestamps continuously until the array reaches its maximum capacity. Additionally, I've implemented a command called <code>SEND_TIME_DATA</code> to loop through the array and send out each timestamp individually. To test this idea, I repeated the previous experiments and summarize the results in table below.</p>
+                    <table class = table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Data (bytes)</th>
+                                <th scope="col">Start time (ms)</th>
+                                <th scope="col">End time (ms)</th>
+                                <th scope="col">Data Transfer Rate (kb/s)</th>                               
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td scope="row">8000</td>
+                                <td>159981</td>
+                                <td>160303</td>
+                                <td>24.844</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">8000</td>
+                                <td>212030</td>
+                                <td>212363</td>
+                                <td>24.024</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">8000</td>
+                                <td>248491</td>
+                                <td>248833</td>
+                                <td>23.391</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">9000</td>
+                                <td>1082240</td>
+                                <td>1082579</td>
+                                <td>26.548</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">9000</td>
+                                <td>1270486</td>
+                                <td>1270806</td>
+                                <td>25.000</td>
+                            </tr>           
+                        </tbody>
+                    </table>
+
+                    <p>The second method demonstrates a remarkable improvement in data transmission, achieving an average speed of 25 kb/s, a rate 20 times faster than the first method. This approach enhances efficiency by reducing the need for frequent data transmissions and streamlining the process of handling timestamps.Conversely, the first method exhibits inefficiency and sluggish data transfer, lagging behind the rapid pace set by the second method.
+                        In scenarios where real-time data collection is paramount, the first method shines. Its ability to provide instantaneous data reflects the condition at the moment, making it ideal for situations requiring immediate access to information. For instance, monitoring vital signs in a medical setting or capturing sensor readings in an industrial environment may necessitate this method's responsiveness.
+                        However, the second method presents a compelling solution for scenarios prioritizing efficiency and high data transfer rates. While it may introduce latency due to the time required for the board to collect and transmit data, its superior speed and efficiency make it suitable for applications demanding large-scale data transfers. For instance, transmitting high-definition video feeds in surveillance systems or exchanging large datasets in scientific research could benefit from the expedited data transmission capabilities of the second method.</p>
+                    <p> The Artemis board has 384 kB of RAM. In arduino, 1 char is 8 bits, 1 int is 16 bits and 1 float is 32 bits. The artemis boards could store 384000 characters or 192000 integers or 96000 floats to send without running out of memory.</p>
+
+                    <h2 class="section-heading">GET_TEMP_READINGS Command</h2>
+                    <p>To ensure accurate data tracking and analysis, the implementation involves creating a command called <code>GET_TEMP_READINGS</code> to transmit temperature readings with corresponding timestamps. Utilizing a notification handler, these strings are parsed, and the data is formatted appropriately. The board sends data in the format "Time: 123456, Temp: 23", and the computer receives and prints it as "123456:23".
+                        To optimize efficiency, two arrays are utilized—one for temperature and one for time. During each iteration of a loop, both time and temperature data are stored to minimize time discrepancies between measurements. Once both arrays are full, the loop traverses them, converting the time and temperature data into strings and separating them with "," before transmitting to the computer using <code>Estring</code>.
+                        In the notification handler, the received bytearray is transformed into strings, and the string is split by "," to form a list. The first element is then added to the timelist, and the second to the temperature list. Finally, the values are formatted into the desired output format.
+                        This comprehensive approach ensures precise timestamp labeling of temperature data, facilitating trend analysis and rate of change observations, vital for scenarios involving large data transfers and critical monitoring tasks.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">def</span> <span style="color: #0066BB; font-weight: bold">notification_handler</span>(uuid,byte_array):
+    s <span style="color: #333333">=</span> ble<span style="color: #333333">.</span>bytearray_to_string(byte_array)
+    list<span style="color: #333333">.</span>append(s)
+    split_values <span style="color: #333333">=</span> s<span style="color: #333333">.</span>split(<span style="background-color: #fff0f0">&#39;,&#39;</span>)
+
+    <span style="color: #888888"># Extract the values T and F</span>
+    time_value <span style="color: #333333">=</span> split_values[<span style="color: #0000DD; font-weight: bold">0</span>]<span style="color: #333333">.</span>split(<span style="background-color: #fff0f0">&#39;:&#39;</span>)[<span style="color: #0000DD; font-weight: bold">1</span>]
+    temp_value <span style="color: #333333">=</span> split_values[<span style="color: #0000DD; font-weight: bold">1</span>]<span style="color: #333333">.</span>split(<span style="background-color: #fff0f0">&#39;:&#39;</span>)[<span style="color: #0000DD; font-weight: bold">1</span>]
+    
+    <span style="color: #888888"># Format the values into the desired format</span>
+    formatted_string <span style="color: #333333">=</span> time_value <span style="color: #333333">+</span> <span style="background-color: #fff0f0">&#39;:&#39;</span> <span style="color: #333333">+</span> temp_value
+    
+    <span style="color: #008800; font-weight: bold">print</span>(formatted_string)
+</pre></div>
+                    <p>The fig below shows the result received from the computer which is the same forwat I want. This demonstrates the accuracy of the Arduino command and notification_handler.</p>
+                    <img class="img-fluid" src="assets/img/temp_with_time.png" alt="..." />
+
+                    <h2 class="section-heading">Effective Data Rate And Overhead:</h2>
+
+
+                    <h2 class="section-heading">Reliability</h2>
+
+
+<!--                     
+                        <a href="#!"><img class="img-fluid" src="assets/img/post-sample-image.jpg" alt="..." /></a>
+                        <span class="caption text-muted">To go places and do things that have never been done before – that’s what living is all about.</span>
+                        <p>Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.</p>
+                        <p>As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.</p>
+                        <p>
+                            Placeholder text by
+                            <a href="http://spaceipsum.com/">Space Ipsum</a>
+                            &middot; Images by
+                            <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>
+                        </p>
+                     -->
+   
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
