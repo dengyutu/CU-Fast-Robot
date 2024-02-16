@@ -55,6 +55,7 @@
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
                         <p>The purpose of this part of the lab is to setup and become familiar with the Arduino IDE, the Artemis board and the Bluetooth Low Energy Module. </p>
                         <p>Let's explain these concepts one by one: </p>
                         <p>First, in order to control the behavior of a robot, we need a "controller" that could send commands to the robot and receive data from it. In this course, the "controller" we are using is the SparkFun RedBoard Artemis Nano board. Click <a href="https://www.sparkfun.com/products/15443" class="link-primary">here</a> to learn more about the board.</p>
@@ -65,7 +66,6 @@
                             <li>1 x SparkFun RedBoard Artemis Nano</li>
                             <li>1 x USB C-to-C cable</li>
                         </ul>
-                        <h2 class="section-heading">Setup Arduino IDE</h2>
 
                         <h2 class="section-heading">Blink it up!</h2>
                         Like the basic "Hello world" example in every programming language, Arduino has a easy "Blink LED" example that blinks a LED on the board. The code can be found in the Examples->01.Basics->Blink file.
@@ -108,7 +108,8 @@ Serial.println(<span style="background-color: #fff0f0">&quot;Apollo3 - Serial&qu
                     <iframe width="700" height="515"
                     src="https://www.youtube.com/embed/0LDfAzD4mO4">
                     </iframe>
-                    "When I am recording this video, the loudest frequency of the surroundings is around hundreds, and when I started to sing (whistle), the frequency rose to one thousand. This shows that the microphone works accurately.</p>
+                    <span class="caption text-muted">Frequency measurements from the Artemis board</span>
+                    When I am recording this video, the loudest frequency of the surroundings is around hundreds, and when I started to sing (whistle), the frequency rose to one thousand. This shows that the microphone works accurately.</p>
                     <h2 class="section-heading">Whistle to a LED? Weird</h2>
                     <p>It is time to challenge ourself and combine what we did in this lab. The goal is to utilize a musical "A" note to control the LED. The code logic is straightforward: the board continuously samples sound from the environment via the microphone and determines the loudest frequency, storing it in a local variable named <code>frequency</code>. Subsequently, the board compares the value of <code>frequency</code> with the standard frequency of the musical "A" note, which is 440Hz. If the frequency equals 440Hz, the LED pin receives a high voltage signal; otherwise, it receives a low voltage signal.</p>
                     <p>Below is the snippet of the code</p>
@@ -128,6 +129,7 @@ Serial.println(<span style="background-color: #fff0f0">&quot;Apollo3 - Serial&qu
                     <iframe width="700" height="515"
                     src="https://www.youtube.com/embed/M-PkQSK1Up0">
                     </iframe> 
+                    <span class="caption text-muted">LED blinks with musical notes</span>
 
                     <h2 class="section-heading">Bluetooth Magic</h2>
 
@@ -138,14 +140,11 @@ Serial.println(<span style="background-color: #fff0f0">&quot;Apollo3 - Serial&qu
                     <h2 class="section-heading">Setup</h2>
                     <p>The setup process is not easy, but luckily, the instructors and TAs for this class provide detailed <a href="https://fastrobotscornell.github.io/FastRobots/labs/Lab1_new.html" class="link-primary">instructions</a> to walk through this process. In summary, the basic steps are: install python and pip --> set up virtual environment for the project --> install necessary python pakages.</p>
                     <p>Furthermore, it is necessary to download the supporting library into the project directory to facilitate Bluetooth Low Energy (BLE) communication between the computer and the Artemis board. The zip file can be found in the instruction page above.</p>
-                    <p>The supporting codebase is consist of two parts: one part for the python called ble_python and the other one for the Arduino called ble_arduino. </p>
-                    
-                    <p></p>
-                    <p>The Bluetooth technology typically operates across different layers, each layer responsible for specific functions and protocols. The most commonly referenced model for understanding these layers is the OSI (Open Systems Interconnection) model, which conceptualizes communication systems as a stack of layers, with each layer building upon the services provided by the layer below it.  </p>
-                    <p>In the Physical Layer, the devices encode binary information into Electromagnetic waves and send these waves to each other. Since Electromagnetic waves travel as the speed of light, the communication is very fast and efficient. In the application layer, the Bluetooth module provides various profiles and protocols that enable specific applications and services.</p>
-                    <p>In Bluetooth Low Energy (BLE) communication, devices use Universally Unique Identifiers (UUIDs) to organize functionalities into services and characteristics. UUIDs act like unique names for different components, helping devices identify and interact with each other efficiently. Services group related features, such as heart rate monitoring or step counting in a fitness tracker, each assigned a distinct UUID. Within each service, characteristics represent specific attributes like current heart rate, each with its own UUID. When a peripheral device advertises its services and characteristics, a central device scans for them based on their UUIDs. Upon establishing a connection, the central device can access and exchange data with specific characteristics of the peripheral device's services. This organized structure streamlines communication between devices, facilitating tasks such as retrieving sensor data or controlling device functions seamlessly.
-                    </p>
-
+                    <p>The supporting codebase comprises two main components: <code>ble_arduino</code> for the Arduino side and <code>ble_python</code>  for the Python side.
+                        In<code>ble_arduino</code>, the main file organizes the actions of the board, including advertising its presence with a MAC address, listening for commands, receiving data, and transmitting data to the computer. Supporting this, <code>RobotCommand</code> file facilitates parsing various data types from the robot command strings sent to the Artemis board, while <code>Estring</code> file provides utilities for string manipulation. Additionally, the <code>BLECStringCharacteristic</code> class enables the transmission and reception of data via BLE.
+                        On the Python side, <code>ble</code> and <code>baseble</code> contain classes for establishing connections and exchanging data with the Artemis board. The <code>cmd_type</code> file defines mappings between command types and integers, facilitating communication between the Python and Arduino components. The <code>connection.yaml</code> file assigns UUIDs to different data for transmission and reception. Finally, a log file records events and interactions during BLE connections.</p>                    
+                    <p>In Bluetooth Low Energy (BLE) communication, devices use Universally Unique Identifiers (UUIDs) to organize functionalities into services and characteristics. UUIDs act like unique names for different components, helping devices identify and interact with each other efficiently. Services group related features, such as heart rate monitoring or step counting in a fitness tracker, each assigned a distinct UUID. Within each service, characteristics represent specific attributes like current heart rate, each with its own UUID. When a peripheral device advertises its services and characteristics, a central device scans for them based on their UUIDs. Upon establishing a connection, the central device can access and exchange data with specific characteristics of the peripheral device's services. This organized structure streamlines communication between devices, facilitating tasks such as retrieving sensor data or controlling device functions seamlessly. </p>
+                    <p>The figure below illustrates a successful connection between the Artemis board and the computer where the Artemis board advertises itself first with the MAC address and the computer scans the MAC address and connects to it. The following lines are examples of the commands received from the Artemis board and data sent to the computer. When the Artemis board received a command <code>PING</code>, it will send "PONG" back. When the Artemis board received a command <code>SEND_TWO_INTS</code>, it prints out two integers it recived from the computer. </p>
                     <a href="#!"><img class="img-fluid" src="assets/img/Test1.jpeg" alt="..." /></a>
 
 
@@ -273,10 +272,33 @@ Serial.println(<span style="background-color: #fff0f0">&quot;Apollo3 - Serial&qu
                     <img class="img-fluid" src="assets/img/temp_with_time.png" alt="..." />
 
                     <h2 class="section-heading">Effective Data Rate And Overhead:</h2>
+                    <p>This task investigates the time differences associated with varying packet sizes when a message is transmitted from the computer and a reply is received from the Artemis board. Despite all characters being decoded as 8 bits or 1 byte in the Arduino, upon measuring the time, it was observed that different characters took varying amounts of time to transmit to the computer. To address this, a function called <code>generateRandomString</code> was developed, which randomly generates an array with a predefined size. Additionally, a command named <code>LARGE</code> was implemented to send the array to the computer via the string characteristic. </p>
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">generateRandomString</span>(<span style="color: #333399; font-weight: bold">char</span><span style="color: #333333">*</span> str, <span style="color: #333399; font-weight: bold">size_t</span> length) {
+    <span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">char</span> charset[] <span style="color: #333333">=</span> <span style="background-color: #fff0f0">&quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&quot;</span>;
+    <span style="color: #333399; font-weight: bold">size_t</span> charsetSize <span style="color: #333333">=</span> <span style="color: #008800; font-weight: bold">sizeof</span>(charset) <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">1</span>; <span style="color: #888888">// -1 to exclude null terminator</span>
+    <span style="color: #008800; font-weight: bold">for</span> (<span style="color: #333399; font-weight: bold">size_t</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>; i <span style="color: #333333">&lt;</span> length; <span style="color: #333333">++</span>i) {
+        str[i] <span style="color: #333333">=</span> charset[random(<span style="color: #0000DD; font-weight: bold">0</span>, charsetSize)];
+    }
+    str[length] <span style="color: #333333">=</span> <span style="color: #0044DD">&#39;\0&#39;</span>; <span style="color: #888888">// Add null terminator at the end</span>
+}
+</pre></div>
 
-
+                    <p>To encompass a range of packet sizes, I opted to randomly generate strings of varying lengths: 5, 10, 50, 100, and 150 bytes, and send 15000 bytes in total. Taking the packet size of 150 bytes as an example, to achieve a total of 15,000 bytes, the computer iterated 100 times, sending messages to and receiving randomly generated strings from the Artemis board.</p>
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">total_time_150 <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>
+    <span style="color: #008800; font-weight: bold">for</span> i <span style="color: #000000; font-weight: bold">in</span> <span style="color: #007020">range</span> (<span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">100</span>):
+    start <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time()
+    ble<span style="color: #333333">.</span>send_command(CMD<span style="color: #333333">.</span>LARGE, <span style="background-color: #fff0f0">&quot; &quot;</span>)
+    end <span style="color: #333333">=</span> time<span style="color: #333333">.</span>time()
+    total_time_150 <span style="color: #333333">+=</span> end <span style="color: #333333">-</span> start
+<span style="color: #007020">print</span>(total_time_150)
+</pre></div>
+                    <p>The figure below illustrates the outcome of the experiment, revealing a linear relationship between packet size and effective data transfer rate. Notably, smaller packets incur a higher overhead, while larger replies help mitigate this overhead. This suggests that for future data transmission, prioritizing larger packet sizes can significantly enhance efficiency by reducing overhead.</p>
+                    <img class="img-fluid" src="assets/img/data_transfer_rate.png" alt="..." />
+                    <p>Here's an interesting observation: it takes 50 microseconds to generate a single character and 1500 microseconds to send each character. Consequently, randomly generating a string is a reasonable test since the time taken to generate the string is negligible compared to the time it takes to send it. Additionally, it's worth noting that the temperature increased by 1 degree Celsius (1.8 degrees Fahrenheit) after sending 15,000 bytes of data</p>
+                    
                     <h2 class="section-heading">Reliability</h2>
-
+                    <p>This task explores the scenario where the Artemis board sends data to the computer at a higher rate from the robot. To achieve this, the approach involves sending as much data as possible with minimal delay between transmissions. Although the Bluetooth Core Specification allows characteristic values of up to 512 bytes, the ArduinoBLE library imposes a maximum size limit of 255 bytes. And the class library we are using has a more conservative size limitation of 150 bytes. To optimize this, the <code>MAX_MSG_SIZE</code>  variable in the<code>Estring.h</code> file was adjusted to 256, accounting for the null terminator at the end. Subsequently, a command named <code>QUICK</code> was implemented to continuously send an array of size 255 bytes 100 times. A <code>notification_handler</code> was implemented to check the size of the received string, printing 'False' if it does not match the expected size of 255 characters. The total time taken for this operation was 3488 milliseconds, resulting in an effective data transfer rate of 7 kb/s. However, upon inspecting the string received by the computer, it was found to contain only 239 characters, less than the 255 characters sent by the Artemis board. This discrepancy indicates data loss when a large amount of data is sent in a short amount of time. From the figure below, it is clear that the strings received for all 100 transmissions do not match the size of the string sent by the Artemis board.</p>
+                    <img class="img-fluid" src="assets/img/Reliablity.png" alt="..." />
 
 <!--                     
                         <a href="#!"><img class="img-fluid" src="assets/img/post-sample-image.jpg" alt="..." /></a>
