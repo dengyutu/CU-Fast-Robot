@@ -157,11 +157,59 @@
 </pre></div>
 
                         <h3 class="section-subheading">IMU drift</h3>
-                        <p>As we leanred from Lab 2, the yaw rotation can only be calulated by integrating the </p>
+                        <p>As we learned in Lab 2, yaw rotation can only be calculated by integrating the gyroscope data. The major drawback of this approach is that it leads to significant drift over time, which is detrimental to accurate orientation control. To address this issue, I implemented the Digital Motion Processor (DMP) available on our IMU board. The DMP offers ultra-low power run-time and performs background calibration of the accelerometer, gyroscope, and compass. This calibration ensures that the sensor data remains accurate and reliable, both for physical measurements and for virtual sensors generated through sensor fusion. Essentially, the DMP corrects errors and reduces drift by fusing readings from the ICM's 3-axis gyroscope, 3-axis accelerometer, and 3-axis magnetometer/compass. This fusion process significantly improves the performance and stability of orientation control in our system.</p>
+                        <p>The code below illustrates how the DSP is enabled and used in my robot.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">icm_20948_DMP_data_t data;
+    myICM.readDMPdataFromFIFO(<span style="color: #333333">&amp;</span>data);
+
+    <span style="color: #008800; font-weight: bold">if</span> ((myICM.status <span style="color: #333333">==</span> ICM_20948_Stat_Ok) <span style="color: #333333">||</span> (myICM.status <span style="color: #333333">==</span> ICM_20948_Stat_FIFOMoreDataAvail)) <span style="color: #888888">// check if data is avaliable</span>
+    {
+      <span style="color: #008800; font-weight: bold">if</span> ((data.header <span style="color: #333333">&amp;</span> DMP_header_bitmap_Quat6) <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #888888">// Check for Quat6 orientation data</span>
+      {
+        <span style="color: #888888">// Q0 value is computed from this equation: Q0^2 + Q1^2 + Q2^2 + Q3^2 = 1.</span>
+        <span style="color: #888888">// In case of drift, the sum will not add to 1, therefore, quaternion data need to be corrected with right bias values.</span>
+        <span style="color: #888888">// The quaternion data is scaled by 2^30.</span>
+        <span style="color: #888888">// Scale to +/- 1</span>
+        <span style="color: #333399; font-weight: bold">double</span> q1 <span style="color: #333333">=</span> ((<span style="color: #333399; font-weight: bold">double</span>)data.Quat6.Data.Q1) <span style="color: #333333">/</span> <span style="color: #6600EE; font-weight: bold">1073741824.0</span>; <span style="color: #888888">// Convert to double. Divide by 2^30</span>
+        <span style="color: #333399; font-weight: bold">double</span> q2 <span style="color: #333333">=</span> ((<span style="color: #333399; font-weight: bold">double</span>)data.Quat6.Data.Q2) <span style="color: #333333">/</span> <span style="color: #6600EE; font-weight: bold">1073741824.0</span>; <span style="color: #888888">// Convert to double. Divide by 2^30</span>
+        <span style="color: #333399; font-weight: bold">double</span> q3 <span style="color: #333333">=</span> ((<span style="color: #333399; font-weight: bold">double</span>)data.Quat6.Data.Q3) <span style="color: #333333">/</span> <span style="color: #6600EE; font-weight: bold">1073741824.0</span>; <span style="color: #888888">// Convert to double. Divide by 2^30</span>
+  
+        <span style="color: #888888">// Convert the quaternions to Euler angles (roll, pitch, yaw)</span>
+        <span style="color: #888888">// https://en.wikipedia.org/w/index.php?title=Conversion_between_quaternions_and_Euler_angles&amp;section=8#Source_code_2</span>
+        <span style="color: #333399; font-weight: bold">double</span> q0 <span style="color: #333333">=</span> sqrt(<span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">-</span> ((q1 <span style="color: #333333">*</span> q1) <span style="color: #333333">+</span> (q2 <span style="color: #333333">*</span> q2) <span style="color: #333333">+</span> (q3 <span style="color: #333333">*</span> q3)));
+        <span style="color: #333399; font-weight: bold">double</span> q2sqr <span style="color: #333333">=</span> q2 <span style="color: #333333">*</span> q2;
+        <span style="color: #888888">// roll (x-axis rotation)</span>
+        <span style="color: #333399; font-weight: bold">double</span> t0 <span style="color: #333333">=</span> <span style="color: #333333">+</span><span style="color: #6600EE; font-weight: bold">2.0</span> <span style="color: #333333">*</span> (q0 <span style="color: #333333">*</span> q1 <span style="color: #333333">+</span> q2 <span style="color: #333333">*</span> q3);
+        <span style="color: #333399; font-weight: bold">double</span> t1 <span style="color: #333333">=</span> <span style="color: #333333">+</span><span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">-</span> <span style="color: #6600EE; font-weight: bold">2.0</span> <span style="color: #333333">*</span> (q1 <span style="color: #333333">*</span> q1 <span style="color: #333333">+</span> q2sqr);
+        <span style="color: #333399; font-weight: bold">double</span> roll <span style="color: #333333">=</span> atan2(t0, t1) <span style="color: #333333">*</span> <span style="color: #6600EE; font-weight: bold">180.0</span> <span style="color: #333333">/</span> PI;
+        <span style="color: #888888">// pitch (y-axis rotation)</span>
+        <span style="color: #333399; font-weight: bold">double</span> t2 <span style="color: #333333">=</span> <span style="color: #333333">+</span><span style="color: #6600EE; font-weight: bold">2.0</span> <span style="color: #333333">*</span> (q0 <span style="color: #333333">*</span> q2 <span style="color: #333333">-</span> q3 <span style="color: #333333">*</span> q1);
+        t2 <span style="color: #333333">=</span> t2 <span style="color: #333333">&gt;</span> <span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">?</span> <span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">:</span> t2;
+        t2 <span style="color: #333333">=</span> t2 <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">?</span> <span style="color: #333333">-</span><span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">:</span> t2;
+        <span style="color: #333399; font-weight: bold">double</span> pitch <span style="color: #333333">=</span> asin(t2) <span style="color: #333333">*</span> <span style="color: #6600EE; font-weight: bold">180.0</span> <span style="color: #333333">/</span> PI;
+        yaw (z<span style="color: #333333">-</span>axis rotation)
+        <span style="color: #333399; font-weight: bold">double</span> t3 <span style="color: #333333">=</span> <span style="color: #333333">+</span><span style="color: #6600EE; font-weight: bold">2.0</span> <span style="color: #333333">*</span> (q0 <span style="color: #333333">*</span> q3 <span style="color: #333333">+</span> q1 <span style="color: #333333">*</span> q2);
+        <span style="color: #333399; font-weight: bold">double</span> t4 <span style="color: #333333">=</span> <span style="color: #333333">+</span><span style="color: #6600EE; font-weight: bold">1.0</span> <span style="color: #333333">-</span> <span style="color: #6600EE; font-weight: bold">2.0</span> <span style="color: #333333">*</span> (q2sqr <span style="color: #333333">+</span> q3 <span style="color: #333333">*</span> q3);
+        yaw <span style="color: #333333">=</span> <span style="color: #333333">-</span> (atan2(t3, t4) <span style="color: #333333">*</span> <span style="color: #6600EE; font-weight: bold">180.0</span> <span style="color: #333333">/</span> PI);
+        Serial.print(<span style="background-color: #fff0f0">&quot;roll:&quot;</span>);
+        Serial.print(roll);
+        Serial.print(<span style="background-color: #fff0f0">&quot;,&quot;</span>);
+        Serial.print(<span style="background-color: #fff0f0">&quot;pitch:&quot;</span>);
+        Serial.print(pitch);
+        Serial.print(<span style="background-color: #fff0f0">&quot;,&quot;</span>);
+        Serial.print(<span style="background-color: #fff0f0">&quot;yaw:&quot;</span>);
+        Serial.print(yaw);
+        Serial.println();
+      }
+    }
+  }
+  </pre></div>
+  
 
                         <h2 class="section-heading">Implementation</h2>
                         <h3 class="section-subheading">Proportional term</h3>
-                        <p>The proportional term in the PID controller is straightforward to calculate. It involves determining the error, which is the difference between the measured distance from the Time-of-Flight (ToF) sensor and the setpoint. The proportional term is then obtained by multiplying this error by the proportional coefficient (Kp).</p>
+                        <p>The proportional term in the PID controller is straightforward to calculate. It involves determining the error, which is the difference between the measured distance from the Time-of-Flight (ToF) sensor and the setpoint. One important consideration is that the DMP returns the yaw value in a range from 0 to 180 degrees and then from -180 degrees to -1 degrees. This means that if the robot rotates 270 degrees clockwise, the DMP will report a yaw value of -90 degrees. To ensure consistency in the data scale, I adjusted the error calculation by adding 360 degrees whenever the value is smaller than -180 degrees. This adjustment transforms the error range to 0 to 360 degrees for clockwise rotation, providing a uniform scale for all rotational measurements. The proportional term is then obtained by multiplying this error by the proportional coefficient (Kp).</p>
                         <h3 class="section-subheading">Derivative term</h3>
                         <p>To calculate the derivative of the error, we apply the formula for the derivative, which involves finding the rate of change of the error over time. This is done by taking the difference between the current error and the previous error, and then dividing by the time interval between these two measurements. Since the time interval between two measurements are very similar, we ignored this term. If we choose to increase this term, we just needs to increase the derivative coefficient (kd) more and nothing else will change. sThe derivative term is obtained by multiplying this rate of change by the derivative coefficient (Kd).</p>
                         <p>Additionally, since the Artemis microcontroller operates faster than the ToF sensor, it often reads the same measurement multiple times before new data is available from the sensor. This can cause the calculated derivative of the error to incorrectly appear as zero when no new measurements are received. To address this, we update the derivative of the error only when there is a non-zero difference between the current and previous errors. If the error remains the same, we keep the derivative of the error unchanged.</p>
@@ -174,62 +222,66 @@
                             <li>The controller output is saturated. In other words, when the pwm value is 255</li>
                             <li>The sign of the controller output is the same as the sign of the error (i.e. the integrator is making the situation worse).</li>
                         </ol>
-                        <p>As soon as the error switches sign, we unclamp the integrator term so that it immediately starts to decrease, limiting overshoot. I choose to clamp the integral term at 30000 and -30000.</p>
+                        <p>As soon as the error switches sign, we unclamp the integrator term so that it immediately starts to decrease, limiting overshoot. I choose to clamp the integral term at 3000 and -3000.</p>
                         <p>To sum up, only when the <code>motor_speed</code> is not 255 or -255 and the <code>motor_speed</code> and error has the same sign, I chose to increase the integral term. </p>
                         <h3 class="section-subheading">Intermediate control value</h3>
-                        <p>To enhance motor control and provide more detailed PID tuning, I introduced an intermediate control value called <code>motor_control</code>. This value represents the sum of all three terms in the PID controller and is constrained to a range between -1000 and 1000. To account for the deadband of the motor, which is set at 40 units in my system, I implemented a linear mapping of <code>motor_control</code> to <code>motor_speed</code>. For <code>motor_speed</code>, which ranges from -255 to 255, I mapped <code>motor_control</code> in such a way that values below -40 are mapped to speeds between -255 and -40, while values above 40 are mapped to speeds between 40 and 255. This mapping ensures that the motor responds smoothly to changes in the control signal, with gradual adjustments around the deadband to prevent abrupt changes in motor speed.</p>
-                        <p>This code snippet below is the complete Implementation of the function <code>PID()</code> which is called repeatedly every loop after the function <code>sensor_TOF()</code> that updates the ToF sensor data.</p>
+                        <p>To enhance motor control and provide more detailed PID tuning, I introduced an intermediate control value called <code>motor_control</code>. This value represents the sum of all three terms in the PID controller and is constrained to a range between -200 and 200. To account for the deadband of the motor, which is set at 180 pwm value in my system, I implemented a linear mapping of <code>motor_control</code> to <code>motor_speed</code>. For <code>motor_speed</code>, which ranges from -255 to 255, I mapped <code>motor_control</code> in such a way that values below 0 are mapped to speeds between -255 and -180, while values above 0 are mapped to speeds between 180 and 255. This mapping ensures that the motor responds smoothly to changes in the control signal, with gradual adjustments around the deadband to prevent abrupt changes in motor speed.</p>
+                        <p>This code snippet below is the complete Implementation of the function <code>A_PID()</code> which is called repeatedly every loop after the function <code>sensor_IMU()</code> that updates the IMU data.</p>
+
 <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span>
-    <span style="color: #0066BB; font-weight: bold">PID</span>()
-    {
-      difference <span style="color: #333333">=</span> distance1 <span style="color: #333333">-</span> setpoint;
-      <span style="color: #008800; font-weight: bold">if</span>( (motor_speed<span style="color: #333333">!=</span><span style="color: #0000DD; font-weight: bold">255</span>) <span style="color: #333333">&amp;&amp;</span> (motor_speed<span style="color: #333333">!=-</span><span style="color: #0000DD; font-weight: bold">255</span>) <span style="color: #333333">&amp;&amp;</span> (motor_speed<span style="color: #333333">&gt;=</span><span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> difference<span style="color: #333333">&gt;=</span><span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #333333">&amp;&amp;</span> (motor_speed<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> difference<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">0</span>)){
-        d_sum <span style="color: #333333">+=</span> difference;
-        <span style="color: #008800; font-weight: bold">if</span>(d_sum <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">30000</span>)
-          d_sum <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">30000</span>;
-        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span>(d_sum <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">30000</span>)
-          d_sum <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">30000</span>;
-      }
-      <span style="color: #008800; font-weight: bold">if</span>(difference <span style="color: #333333">-</span> d_old <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> array_index <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
-      d_derivative <span style="color: #333333">=</span> <span style="color: #333399; font-weight: bold">float</span>(difference <span style="color: #333333">-</span> d_old);
-      }
-      d_old <span style="color: #333333">=</span> difference;
-      t_old <span style="color: #333333">=</span> millis();
-      motor_speed <span style="color: #333333">=</span> difference <span style="color: #333333">*</span> proportion <span style="color: #333333">+</span> d_derivative <span style="color: #333333">*</span> derivative; <span style="color: #333333">+</span> d_sum <span style="color: #333333">*</span> integral;
-        <span style="color: #008800; font-weight: bold">if</span>(motor_control <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">1000</span>)
-        motor_control <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1000</span>;
-      <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span>(motor_control <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1000</span>)
-        motor_control <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1000</span>;
-    
-      <span style="color: #008800; font-weight: bold">if</span>(motor_control <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
-        motor_speed <span style="color: #333333">=</span> motor_control <span style="color: #333333">/</span> <span style="color: #0000DD; font-weight: bold">1000</span> <span style="color: #333333">*</span> (<span style="color: #0000DD; font-weight: bold">215</span>) <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">40</span>;
-      }
-      <span style="color: #008800; font-weight: bold">else</span>
-      {
-        motor_speed <span style="color: #333333">=</span> motor_control <span style="color: #333333">/</span> <span style="color: #0000DD; font-weight: bold">1000</span> <span style="color: #333333">*</span> (<span style="color: #0000DD; font-weight: bold">215</span>) <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">40</span>;
-      }
-      <span style="color: #008800; font-weight: bold">if</span>(difference<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">10</span> <span style="color: #333333">&amp;&amp;</span> difference<span style="color: #333333">&gt;=-</span><span style="color: #0000DD; font-weight: bold">10</span>){
-        motor_speed <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
-      }
-      <span style="color: #008800; font-weight: bold">if</span>(motor_speed <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
-        analogWrite(leftbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
-        analogWrite(leftforward,motor_speed);
-        analogWrite(rightforward,(<span style="color: #333399; font-weight: bold">int</span>)(motor_speed<span style="color: #333333">/</span><span style="color: #6600EE; font-weight: bold">1.2</span>));
-        analogWrite(rightbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
-        }
-      <span style="color: #008800; font-weight: bold">else</span>{
-        analogWrite(rightforward,<span style="color: #0000DD; font-weight: bold">0</span>);
-        analogWrite(rightbackward,(<span style="color: #333399; font-weight: bold">int</span>)(<span style="color: #333333">-</span>motor_speed<span style="color: #333333">/</span><span style="color: #6600EE; font-weight: bold">1.2</span>));
-        analogWrite(leftbackward,(<span style="color: #333333">-</span>motor_speed));
-        analogWrite(leftforward,<span style="color: #0000DD; font-weight: bold">0</span>);
-        }
+<span style="color: #0066BB; font-weight: bold">A_PID</span>()
+{
+  a_difference <span style="color: #333333">=</span> yaw <span style="color: #333333">-</span> setangle;
+  <span style="color: #008800; font-weight: bold">if</span>(a_difference<span style="color: #333333">&lt;-</span><span style="color: #0000DD; font-weight: bold">180</span>){
+    a_difference <span style="color: #333333">=</span> a_difference <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">360</span>;
+  }
+  <span style="color: #008800; font-weight: bold">if</span>( (a_motor_speed<span style="color: #333333">!=</span><span style="color: #0000DD; font-weight: bold">255</span>) <span style="color: #333333">&amp;&amp;</span> (a_motor_speed<span style="color: #333333">!=-</span><span style="color: #0000DD; font-weight: bold">255</span>) <span style="color: #333333">&amp;&amp;</span> ((a_motor_speed<span style="color: #333333">&gt;=</span><span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> a_difference<span style="color: #333333">&gt;=</span><span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #333333">||</span> (a_motor_speed<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> a_difference<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">0</span>))){
+    a_d_sum <span style="color: #333333">+=</span> a_difference;
+    <span style="color: #008800; font-weight: bold">if</span>(a_d_sum <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">3000</span>)
+      a_d_sum <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">3000</span>;
+    <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span>(a_d_sum <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">3000</span>)
+      a_d_sum <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">3000</span>;
+  }
+  <span style="color: #008800; font-weight: bold">if</span>(a_difference <span style="color: #333333">-</span> a_d_old <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> array_index <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
+  a_d_derivative <span style="color: #333333">=</span> <span style="color: #333399; font-weight: bold">float</span>(a_difference <span style="color: #333333">-</span> a_d_old);
+  }
+  a_d_old <span style="color: #333333">=</span> a_difference;
+  a_motor_control <span style="color: #333333">=</span> a_difference <span style="color: #333333">*</span> a_proportion <span style="color: #333333">+</span> a_d_derivative <span style="color: #333333">*</span> a_derivative; <span style="color: #333333">+</span> a_d_sum <span style="color: #333333">*</span> a_integral;
+  <span style="color: #008800; font-weight: bold">if</span>(a_motor_control <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">200</span>)
+    a_motor_control <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">200</span>;
+  <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span>(a_motor_control <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">200</span>)
+    a_motor_control <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">200</span>;
+
+  <span style="color: #008800; font-weight: bold">if</span>(a_motor_control <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
+    a_motor_speed <span style="color: #333333">=</span> a_motor_control <span style="color: #333333">/</span> <span style="color: #0000DD; font-weight: bold">200</span> <span style="color: #333333">*</span> (<span style="color: #0000DD; font-weight: bold">75</span>) <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">180</span>;
+  }
+  <span style="color: #008800; font-weight: bold">else</span>
+  {
+    a_motor_speed <span style="color: #333333">=</span> a_motor_control <span style="color: #333333">/</span> <span style="color: #0000DD; font-weight: bold">200</span> <span style="color: #333333">*</span> (<span style="color: #0000DD; font-weight: bold">75</span>) <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">180</span>;
+  }
+  <span style="color: #008800; font-weight: bold">if</span>(a_difference<span style="color: #333333">&lt;=</span><span style="color: #6600EE; font-weight: bold">1.5</span> <span style="color: #333333">&amp;&amp;</span> a_difference<span style="color: #333333">&gt;=-</span><span style="color: #6600EE; font-weight: bold">1.5</span>){
+    a_motor_speed <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+  }
+  <span style="color: #008800; font-weight: bold">if</span>(a_motor_speed <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
+    analogWrite(leftforward,<span style="color: #0000DD; font-weight: bold">0</span>);
+    analogWrite(rightforward,<span style="color: #333399; font-weight: bold">int</span>(a_motor_speed<span style="color: #333333">*</span><span style="color: #6600EE; font-weight: bold">0.9</span>));
+    analogWrite(leftbackward,a_motor_speed);
+    analogWrite(rightbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
     }
-    </pre></div> 
+  <span style="color: #008800; font-weight: bold">else</span>{
+    analogWrite(leftforward,(<span style="color: #333333">-</span>a_motor_speed));
+    analogWrite(rightforward,<span style="color: #0000DD; font-weight: bold">0</span>);
+    analogWrite(leftbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+    analogWrite(rightbackward,<span style="color: #333399; font-weight: bold">int</span>(<span style="color: #333333">-</span>a_motor_speed<span style="color: #333333">*</span><span style="color: #6600EE; font-weight: bold">0.9</span>));
+    }
+}
+</pre></div>
+
                         <p>After several trials, we found this combination of PID works really well:</p>
                         <ul>
-                            <li><strong>Kp = 0.45</strong></li>
-                            <li><strong>Ki = 0.025</strong></li>
-                            <li><strong>Kp = 1.6</strong></li>
+                            <li><strong>Kp = 2.5</strong></li>
+                            <li><strong>Ki = 0.02</strong></li>
+                            <li><strong>Kp = 6</strong></li>
                         </ul>
                         <p></p>
 
