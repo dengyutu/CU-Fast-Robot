@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 9</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab9/mapping_final.png')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Mapping</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on April 16, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>The purpose of this lab is to create a detailed map of a static environment, specifically the front area of our lab room. This map will include the coordinates of all walls and boundaries within the space. The resulting x-y coordinate mapping can serve as a foundation for future localization and navigation tasks, enhancing the robot's ability to navigate and interact with its environment.</p>
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                           <li> 1 x Fully assembled robot, with <a href="https://www.sparkfun.com/products/15443" class="link-primary">Artemis</a>, <a href="https://www.pololu.com/product/3415" class="link-primary">ToF sensor</a>, and an <a href="https://www.mouser.com/ProductDetail/SparkFun/SEN-15335?qs=uwxL4vQweFMcls1MYZT00A%3D%3D" class="link-primary">IMU.</a></li>
+                        </ul>
+
+                        <h2 class="section-heading">Orientation Control</h2>
+
+                        <h3 class="section-subheading">Background</h3>
+                        <p>To create a detailed map of the environment, our robot needs to measure distances to the walls in all directions. Given the range limitations and the potential for false readings from the Time-of-Flight (ToF) sensor when distances change too drastically during a reading, we opted to place the robot at several marked locations around the lab. At each location, the robot spins around its axis while collecting ToF readings. This approach reduces the required measurement range and ensures the ToF sensor is consistently aimed at a fixed point in space, thereby improving accuracy.</p>
+                        <p>Since our angular PID works really well at Lab6, we choose to utilize the design and control the robot to do on-axis turns in small, accurate increments.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">while</span> (central.connected()) {
+    <span style="color: #888888">//Read command data</span>
+    read_data();
+    sensor_IMU();
+    <span style="color: #008800; font-weight: bold">if</span>(start){
+      <span style="color: #008800; font-weight: bold">if</span>(angle<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">360</span> <span style="color: #333333">&amp;&amp;</span> (a_difference<span style="color: #333333">&lt;=</span><span style="color: #6600EE; font-weight: bold">1.5</span> <span style="color: #333333">&amp;&amp;</span>  a_difference<span style="color: #333333">&gt;=-</span><span style="color: #6600EE; font-weight: bold">1.5</span>)){
+        stop_motor();
+        <span style="color: #008800; font-weight: bold">for</span>(<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>; i<span style="color: #333333">&lt;=</span>num_read; i<span style="color: #333333">++</span>){
+        sensor_IMU();
+        sensor_TOF(); 
+        <span style="color: #008800; font-weight: bold">if</span>(map_index<span style="color: #333333">&lt;</span>mapdata_size){
+          store_map_data(i,angle);
+          map_index <span style="color: #333333">++</span>;
+          }
+        }
+        angle <span style="color: #333333">+=</span> increment;
+        setangle <span style="color: #333333">=</span> angle;
+        a_difference <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+        a_d_old <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+        a_d_sum <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+        a_d_derivative <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+      }
+      sensor_IMU();
+      A_PID();  
+      <span style="color: #008800; font-weight: bold">if</span>(array_index<span style="color: #333333">&lt;</span>arraysize){
+        store_ori_data();
+        array_index <span style="color: #333333">++</span>;
+      }
+    }
+    <span style="color: #008800; font-weight: bold">else</span> {
+      angle <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+      array_index <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+      a_d_sum <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+      stop_motor(); 
+    }
+  }
+  </pre></div>
+    
+                        <p>The video below demonstrates the robot's performance. The robot operates effectively, as evidenced by its accurate rotation angles, smooth rotation, and minimal displacement around its center axis.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/as1p8T2yFUc">
+                        </iframe>
+  
+                        <h3 class="section-subheading">Readings</h3>
+                       <p>In order to fully cover the arenam, I put the robot at four corners of the room to collect the data. The four locations are given as coordinates relative to the origin in the middle of the arena.</p>
+                       <ul>
+                        <li>(-3, -2) ft</li>
+                        <li>(5, 3) ft</li>
+                        <li>(5, -3) ft</li>
+                        <li>(0, 3) ft</li>
+                       </ul>
+
+                        <p>After collecting distance measurements from each location, I transmitted the data via BLE for later analysis. To evaluate the raw results of the mapping routines, I plotted the average data for each location on polar axes. The visualizations showed that the readings generally aligned with expectations: clear patterns emerged along the nearest boundaries, while readings in more open spaces were less consistent.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab9/polar.png" alt="..." /></a>
+                        
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab9/-3-2.png" alt="Figure 1" class="img-fluid">
+                                    <figcaption></figcaption>
+                                </div>                                
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab9/53.png" alt="Figure 2" class="img-fluid">
+                                    <figcaption></figcaption>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab9/5-3.png" alt="Figure 1" class="img-fluid">
+                                    <figcaption></figcaption>
+                                </div>
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab9/03.png" alt="Figure 2" class="img-fluid">
+                                    <figcaption></figcaption>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="section-subheading">Transformations</h3>
+                        <p>The data we collected is the distance between the robot <code>r</code> and the wall and the rotation angle <code>theta</code>. To convert this to (x,y) coordinate, we multiple r with cos(theta) to get the y coordinate and multiple r with sin(theta) to get the x coordinate. In addition, the front sensor is located about 2.5 inches front of center. I applied this offset to the distances measured by each sensor during mapping, and transformed the final distances into the global arena coordinates.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab9/transformation.png" alt="..." /></a>
+                        <p>When all the data is combined, the result is a comprehensive map of the arena as captured by the ToF sensors from four different scanning locations. Each location is represented by a distinct color, indicating the data collected at that position.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab9/Mapping.png" alt="..." /></a>
+
+                        <h3 class="section-subheading">Edges</h3>
+                        <p>To facilitate easier modeling, a line-based map is manually created by drawing lines on the merged map and recording their start and end points. The resulting line-based map, overlaid on the merged map, is shown below.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab9/edge.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab9/mapping_final.png" alt="..." /></a>
+
+                        <h3 class="section-subheading">Conclusion</h3>
+                        <p>The mapping works really well due to the accurate angular PID control. The collected data is very accurate, making it reliable for use in localization and navigation within the mapped environment.</p>
+
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

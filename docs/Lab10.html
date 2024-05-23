@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 10</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab10/GUI.png')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Simulated Localization</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on April 23, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>In this lab, we are becoming acquainted with the simulation environment, a Python-based software platform that provides a virtual map and a virtual robot. The robot can be controlled either through a Python program or manually using the keyboard. It supplies various data for analysis, including front-facing distance sensor readings, odometry readings, and the ground truth of the robot's location. Note that the sensor readings will contain noise. The simulation environment also features a 2D plotter for visualizing odometry readings and ground truth trajectories. By the end of the lab, we will have implemented two control strategies: (a) open-loop control, where the robot travels in a square loop, and (b) closed-loop obstacle avoidance control.</p>
+                        
+                        <h2 class="section-heading">Bayes's Filter</h2>
+                        <p>A Bayesian filter is a probabilistic framework used for estimating the state of a dynamic system over time by applying Bayes' theorem. It represents the state as a probability distribution, which is updated iteratively through two main steps: prediction and update. In the prediction step, the filter uses a motion model to forecast the next state based on the current state and control inputs, incorporating uncertainty in the process. In the update step, the filter incorporates new observations using a sensor model to adjust the predicted state distribution. This combination of prediction and update allows the Bayesian filter to handle uncertainty and noise in sensor data effectively, making it widely used in applications like robot localization, tracking, and sensor fusion.</p>
+                        <h3 class="section-subheading">Localization</h3>
+                        <p>Bayesian filtering plays a crucial role in localization algorithms, particularly in probabilistic approaches such as Monte Carlo Localization (MCL) or the Extended Kalman Filter (EKF). Here's how Bayesian filtering is connected with localization:</p>
+                        <ol>
+                            <li><strong>State Estimation:</strong> In localization, the robot's state typically includes its position and orientation (pose) in the environment. Bayesian filtering allows us to represent this state as a probability distribution, capturing the uncertainty associated with the robot's pose.</li>
+                            <li><strong>Prediction Step:</strong> The robot predicts its next pose based on its motion model and control inputs (e.g., velocity commands). Bayesian filtering enables the prediction of the next state while considering uncertainty in the motion model and control inputs. This prediction yields a probability distribution of the robot's potential future poses.</li>
+                            <li><strong>Update Step:</strong> When the robot receives sensor measurements (e.g., from a GPS receiver, visual odometry, or range sensors), Bayesian filtering updates the predicted pose distribution using Bayes' theorem. The likelihood of each possible pose given the sensor data is calculated using a sensor model, incorporating noise and uncertainty in the sensor readings. The resulting updated pose distribution reflects the most probable locations of the robot given the sensor measurements.</li>
+                            <li><strong>Iterative Process:</strong> Localization with Bayesian filtering is an iterative process. After each prediction and update step, the robot's pose distribution is refined, providing a progressively more accurate estimate of its true pose over time.</li>
+                        </ol>
+                        <h3 class="section-subheading">Sensor Model</h3>
+                        <p>The sensor model, assumed to follow a Gaussian distribution of noise, represents the inaccuracies and uncertainties inherent in sensor measurements. In practice, real-world sensors such as lidar, cameras, or range finders often produce noisy data due to environmental factors, sensor limitations, and interference. The Gaussian distribution is a common choice for modeling sensor noise, as it accurately captures the random variations in sensor readings around their true values.</p>
+                        <h3 class="section-subheading">Motion Model</h3>
+                        <p>The odometry motion model characterizes the robot's movement between successive poses based on control inputs, such as wheel encoder readings or motor commands. It breaks down the movement into three components: initial rotation, translation, and final rotation. The initial rotation accounts for any change in orientation at the beginning of the movement, while the translation represents the linear displacement of the robot. Finally, the final rotation accounts for any additional change in orientation at the end of the movement. By incorporating these components, the odometry model provides a systematic way to estimate the robot's movement, allowing for accurate localization and navigation in the environment.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab10/odometry.png" alt="..." /></a>
+
+                        <h2 class="section-heading">Algorithms</h2>
+                        <h3 class="section-subheading">Compute Control</h3>
+                        <p>The <code>compute_control()</code> function accepts the current pose and the previous pose as inputs. By analyzing the difference between these poses, it calculates the components necessary to characterize the robot's movement according to the odometry model. These components include the initial rotation, translation, and final rotation, which collectively represent the steps involved in estimating the robot's motion between consecutive poses.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab10/compute_control.png" alt="..." /></a>
+                        <h3 class="section-subheading">Odometry Motion Model</h3>
+                        <p>The <code>odom_motion_model()</code> function operates by receiving a current pose and a previous pose as inputs. It then utilizes the <code>compute_control()</code> function to extract the odometry model parameters from these poses. Subsequently, the function calculates the probabilities associated with these parameters, treating them as Gaussian distributions. These distributions are centered on the control input u and have standard deviations provided as relevant parameters. This process ensures that the motion model accounts for uncertainty by modeling the variability in the odometry model parameters.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab10/odom_motion_model.png" alt="..." /></a>
+                        <h3 class="section-subheading">Prediction Step</h3>
+                        <p>The <code>prediction_step()</code> function operates by taking a current and previous odometry state as inputs. It then extracts the odometry model parameters from these states and iterates over the entire grid of discretized cells for both the previous and current poses. During this process, it constructs a predicted belief using the <code>odom_motion_model()</code> function. For each cell, the probabilities calculated by the motion model are multiplied together and tallied for the entire grid. Finally, the probabilities are normalized to form a distribution summing to 1. Given the substantial computational requirements associated with covering the 3D simulation volume, an optimization strategy is implemented. This involves disregarding probabilities smaller than 0.0001, as they make negligible contributions to the belief. While this approach reduces computational complexity, it comes at the expense of filter accuracy.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab10/prediction_step.png" alt="..." /></a>
+                        <h3 class="section-subheading">Sensor Model</h3>
+                        <p>The <code>sensor_model()</code> function operates by accepting an array of observations as input. It calculates the probabilities of each observation occurring for the current state, treating them as Gaussian distributions with a provided standard deviation. This process enables the assessment of the likelihood of each observation given the current state, facilitating the update of the belief state in the Bayesian filtering framework.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab10/sensor_model.png" alt="..." /></a>
+                        <h3 class="section-subheading">Update Step</h3>
+                        <p>The <code>update_step()</code> function iterates over the grid for the current state and retrieves the sensor model data using the <code>sensor_model()</code> function. It then utilizes this data to update the belief state. The updated belief represents the robot's estimation of its position in the discretized environment based on the sensor observations. Finally, the belief is normalized to ensure that the probabilities sum to 1, providing a coherent representation of the robot's estimated position.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab10/update_step.png" alt="..." /></a>
+
+                        <h2 class="section-heading">Simulation</h2>
+                        <p>The initial video illustrates a trajectory and localization simulation lacking a Bayes filter. In this visualization, the deterministic odometry model is depicted in red, contrasting with the ground truth trajectory tracked by the simulator, which is displayed in green. As the simulation progresses, it becomes evident that the odometry model, operating independently, yields poor results. The trajectory portrayed by the odometry model extends beyond the map's boundaries, demonstrating erratic behavior and failing to align with the expected path.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/XAbZAPm1aT4">
+                        </iframe>
+                        <p>In the subsequent video, the integration of a Bayes filter into the localization simulation is demonstrated. Despite the inadequacy of the direct odometry model, indicated by the trajectory in red, the introduction of a probabilistic belief, visualized in blue, yields a significantly improved approximation of the robot's true position. Notably, the probabilistic approach excels in proximity to walls, where sensor data is more reliable and consistent, resulting in a more accurate localization. Conversely, its efficacy diminishes in open spaces, such as the center of the map, where sensor data may be less reliable.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/j--FMW1H7Gk">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

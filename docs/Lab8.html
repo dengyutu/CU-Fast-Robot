@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 8</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab8/final.jpeg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Stunt!</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on April 9, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>In this lab section, one of the tasks will be selected for stunt recording. I have chosen Task A: Position Control to execute the robot flip motion. This task will demonstrate the robot's ability to accurately control its position and perform a complex maneuver, highlighting the effectiveness of the implemented control algorithms and the robustness of the Kalman Filter in dynamic scenarios.</p>
+                        
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                           <li> 1 x Fully assembled robot, with <a href="https://www.sparkfun.com/products/15443" class="link-primary">Artemis</a>, <a href="https://www.pololu.com/product/3415" class="link-primary">ToF sensor</a>, and an <a href="https://www.mouser.com/ProductDetail/SparkFun/SEN-15335?qs=uwxL4vQweFMcls1MYZT00A%3D%3D" class="link-primary">IMU.</a></li>
+                        </ul>
+
+                        <h2 class="section-heading">Flip</h2>
+                        <p>First, a command called <code>Flip</code> is created to start the flip action</p>
+                        <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">case</span> FLIP:
+  flip_on <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+  success <span style="color: #333333">=</span> robot_cmd.get_next_value(set_distance);
+  Serial.print(<span style="background-color: #fff0f0">&quot;Set distance: &quot;</span>);
+  Serial.println(set_distance);
+  <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>success) <span style="color: #008800; font-weight: bold">return</span>;
+
+  flip_start_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+  flip_on <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
+  <span style="color: #008800; font-weight: bold">break</span>;
+</pre></div>
+                        <p>In the flip() function, a state machine is implemented to control the flip stunt.</p>
+                        <ul>
+                            <li><strong>State 0: </strong> When <code>flip_state</code> is 0, the robot enters the full-speed mode to approach the wall. Due to potential issues with the robot not detecting the distance correctly, it will continue moving indefinitely. To prevent this, a timeout condition is added to stop the robot after 5 seconds if it hasn't transitioned to the next state.</li>
+                            <li><strong>State 1:</strong> This state records the start time of the flip maneuver.</li>
+                            <li><strong>States 2, 3, and 4:</strong> These states handle the sequential actions needed to perform the flip: moving backwards, stopping, and moving backwards again.</li>
+                            <li><strong>Final State:</strong> The robot comes to a complete stop, marking the end of the flip maneuver.</li>
+                        </ul>
+                        <p>This structured state machine ensures the flip stunt is executed with precise control, accounting for potential sensor inaccuracies and ensuring the robot performs the desired actions within a safe and defined timeframe.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888">// Function for flip stunt</span>
+    <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">flip</span>() {
+        distanceSensor2.startRanging();
+        flip_distance <span style="color: #333333">=</span> distanceSensor2.getDistance();
+        distanceSensor2.clearInterrupt();
+        distanceSensor2.stopRanging();
+        <span style="color: #888888">// State machine for flip</span>
+        <span style="color: #888888">// Full speed forward state</span>
+        <span style="color: #008800; font-weight: bold">if</span> (flip_state <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">0</span>) {
+          flip_pwm <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">255</span>;
+          forward(flip_pwm);
+          Serial.println(<span style="background-color: #fff0f0">&quot;Forward&quot;</span>);
+          <span style="color: #008800; font-weight: bold">if</span> (flip_distance <span style="color: #333333">&lt;</span> set_distance) {
+            flip_state <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1</span>;
+            Serial.println(<span style="background-color: #fff0f0">&quot;Start record time&quot;</span>);
+          }
+          flip_curr_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+          <span style="color: #008800; font-weight: bold">if</span> ((flip_curr_time <span style="color: #333333">-</span> flip_start_time) <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">5000</span>) {
+            stop();
+            flip_on <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+            Serial.println(<span style="background-color: #fff0f0">&quot;Timeout!&quot;</span>);
+          }
+        } <span style="color: #888888">// Reach the distance and record start time</span>
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (flip_state <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">1</span>) {
+          flip_start_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+          flip_state <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">2</span>;
+          Serial.println(<span style="background-color: #fff0f0">&quot;Start flip&quot;</span>);
+        } <span style="color: #888888">// Start flip</span>
+        <span style="color: #888888">// 1. Backward</span>
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (flip_state <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">2</span>) {
+          flip_curr_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+          <span style="color: #008800; font-weight: bold">if</span> ((flip_curr_time <span style="color: #333333">-</span> flip_start_time) <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">800</span>) {
+            flip_pwm <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">255</span>;
+            analogWrite(AB1IN_LEFT,<span style="color: #0000DD; font-weight: bold">0</span>); 
+            analogWrite(AB2IN_LEFT,abs(flip_pwm));
+            analogWrite(AB1IN_RIGHT,<span style="color: #0000DD; font-weight: bold">0</span>); 
+            analogWrite(AB2IN_RIGHT,abs(flip_pwm));
+            Serial.println(<span style="background-color: #fff0f0">&quot;Backward&quot;</span>);
+          } <span style="color: #008800; font-weight: bold">else</span> {
+            flip_start_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+            flip_state <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">3</span>;
+          }
+        } <span style="color: #888888">// 2. Stop</span>
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (flip_state <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">3</span>) {
+          flip_curr_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+          <span style="color: #008800; font-weight: bold">if</span> ((flip_curr_time <span style="color: #333333">-</span> flip_start_time) <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">100</span>) {
+            flip_pwm <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+            stop();
+            Serial.println(<span style="background-color: #fff0f0">&quot;Stop&quot;</span>);
+          } <span style="color: #008800; font-weight: bold">else</span> {
+            flip_start_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+            flip_state <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">4</span>;
+          }
+        } <span style="color: #888888">// 3. Backward</span>
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span> (flip_state <span style="color: #333333">==</span> <span style="color: #0000DD; font-weight: bold">4</span>) {
+          flip_curr_time <span style="color: #333333">=</span> (<span style="color: #333399; font-weight: bold">float</span>)millis();
+          <span style="color: #008800; font-weight: bold">if</span> ((flip_curr_time <span style="color: #333333">-</span> flip_start_time) <span style="color: #333333">&lt;</span> <span style="color: #0000DD; font-weight: bold">500</span>) {
+            flip_pwm <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">255</span>;
+            backward(abs(flip_pwm));
+            Serial.println(<span style="background-color: #fff0f0">&quot;Backward&quot;</span>);
+          } <span style="color: #888888">// 4. Stop the flip</span>
+          <span style="color: #008800; font-weight: bold">else</span> {
+            flip_pwm <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+            stop();
+            Serial.println(<span style="background-color: #fff0f0">&quot;Stop&quot;</span>);
+            flip_on <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+          }
+        }
+      }
+      </pre></div>
+                    <h2 class="section-heading">Data Recording</h2>
+                    <p>To obtain the flip data, we wrote the command <code>SENDING_FLIP_DATA</code> to transmit the recorded data through the BLE channel to the laptop. Notably, the initiation of the flip occurs when the distance to the wall falls below 1000ms, and during the backward movement phase, the motors are briefly stopped to execute the flip stunt seamlessly. The subsequent program is designed to facilitate the transfer of recorded flip data to the laptop via the BLE channel. This enables us to analyze and evaluate the performance of the flip maneuver, providing insights into its execution and effectiveness.</p>
+                    <a href="#!"><img class="img-fluid" src="assets/img/Lab8/record_data.png" alt="..." /></a>
+                    <p>We also draw the time vs PWM and time vs distance diagrams for two successful stunts.</p>
+                    <a href="#!"><img class="img-fluid" src="assets/img/Lab8/stunt1.png" alt="..." /></a>
+                    <a href="#!"><img class="img-fluid" src="assets/img/Lab8/stunt2.png" alt="..." /></a>
+
+
+                    <h2 class="section-heading">Conclusion</h2>
+                    <p>In conclusion, this lab section focused on selecting one task from the provided instructions and successfully recording three stunts. Particularly, significant enhancements were made to the flip code, incorporating a robust state machine and implementing a timeout function. These improvements not only streamline the execution of the flip maneuver but also mitigate potential issues, such as continuous movement due to inaccurate distance detection. By leveraging these advancements, the robot can reliably perform the flip stunt with precision and consistency. Additionally, the introduction of the timeout function ensures the safety of the operation by preventing the robot from endlessly moving in case of sensor malfunctions or unexpected conditions. Overall, this lab section demonstrated the effectiveness of implementing advanced control strategies and safety mechanisms to achieve desired robotic behaviors and enhance overall performance.</p>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

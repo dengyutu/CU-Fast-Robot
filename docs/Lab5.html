@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 5</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab5/final.jpeg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Linear PID Control</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on March 12, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>The purpose of this lab is to utilize PID control to manage the linear movement of the robot, enabling it to move and stop precisely at predefined locations. By experimenting with different PID parameter values, we aim to observe the varying effects on the robot's motion. Our objective is to determine the optimal PID settings that allow the robot to achieve the desired movement and stopping behavior with accuracy and stability.</p>
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                            <li> 1 x <a href="https://www.sparkfun.com/products/15443" class="link-primary">SparkFun RedBoard Artemis Nano</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/SUMPK-Charging-Braided-Compatible-Samsung/dp/B09Z6J21LY/ref=sr_1_4?keywords=usb%2Bc%2Bto%2Bc&qid=1636380583&qsid=147-6677549-1776715&refinements=p_n_feature_ten_browse-bin%3A23555327011&rnid=23555276011&s=pc&sr=1-4&sres=B08D9SB161%2CB08R68T84N%2CB01CZVEUIE%2CB01FM51812%2CB07VCZV3R4%2CB075V68NVR%2CB075GMKZWW%2CB093BVBRJT%2CB09BBBJ33F%2CB09C2D9Z7T%2CB012V56D2A%2CB092CYFQMP%2CB081L4V3DN%2CB07Y6ZJT1D%2CB07Y2XKPX5%2CB07VPYJV8V%2CB07THJGZ9Z%2CB08W2TP2TT%2CB0744BKDRD%2CB07THFJ1J5&srpt=ELECTRONIC_CABLE&th=1" class="link-primary">USB C-to-C cable</a></li>
+                            <li> 1 x <a href="https://www.mouser.com/ProductDetail/SparkFun/SEN-15335?qs=uwxL4vQweFMcls1MYZT00A%3D%3D" class="link-primary">9DOF IMU sensor</a></li>
+                            <li> 2 x <a href="https://www.pololu.com/product/3415" class="link-primary">4m ToF sensor</a></li>
+                            <li> 1 x <a href="https://www.sparkfun.com/products/18012" class="link-primary">QWICC Breakout board</a></li>
+                            <li> 2 x <a href="https://www.sparkfun.com/products/14426" class="link-primary">QWICC connector</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/dp/B07V56N33J?smid=A2ZDGCOOU4F0SF&ref_=chk_typ_imgToDp&th=1" class="link-primary">JST2 connector+cable</a></li>
+                            <li> 1 x <a href="https://force1rc.com/products/cyclone-remote-control-car-for-kids-adults" class="link-primary">Force1 RC car</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/URGENEX-Battery-Rechargeable-Quadcopter-Charger/dp/B08T9FB56F/ref=sr_1_3?keywords=lipo+battery+3.7V+850mah&qid=1639066404&sr=8-3" class="link-primary">Li-ion 3.7v 850mAh battery</a></li>
+                            <li> 2 x <a href="https://www.digikey.com/en/products/detail/pololu-corporation/2130/10450426" class="link-primary">Dual motor drivers</a></li>
+                        </ul>
+
+                        <h2 class="section-heading">PID Control</h2>
+
+                        <h3 class="section-subheading">Background</h3>
+                        <p>PID control stands for Proportional-Integral-Derivative control, a widely used feedback control technique in engineering systems. It aims to maintain a desired output by adjusting control inputs based on the difference (error) between the desired setpoint and the actual output. A PID controller combines three distinct components:</p>
+                        <ul>
+                            <li><strong>Proportional (P) Control:</strong> This component produces an output that is proportional to the current error. The proportional gain (<em>Kp</em>) determines the responsiveness of the controller. Higher <em>Kp</em> values result in larger adjustments for a given error, leading to quicker responses but potentially causing overshoot and instability.</li>
+                            <li><strong>Integral (I) Control: </strong></li> The integral component addresses accumulated past errors by integrating the error over time. The integral gain (<em>Ki</em>) influences how strongly past errors affect the current output. This helps eliminate steady-state errors but can introduce lag and potential oscillations if not properly tuned.
+                            <li><strong>Derivative (D) Control:</strong> This component predicts future errors based on the rate of change of the error. The derivative gain (<em>Ki</em>) affects the damping response, helping to reduce overshoot and oscillations by anticipating changes in the error. However, excessive <em>Ki</em> can make the system overly sensitive to noise.</li>
+                        </ul>
+                        <p>The combined PID control equation is given by:</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab5/equation.png" alt="..." /></a>
+                        <p>PID controllers are versatile and can be tuned to achieve a wide range of performance characteristics, making them suitable for various applications, from simple temperature control to complex industrial automation systems.</p>
+
+
+                        <h3 class="section-subheading">Heuristics</h3>
+                        <p>There are multiple ways to tune a PID controller, and I chose one of the heuristic methods. First, I adjusted the proportional term to ensure the motor moves in the correct direction to reduce the error between the current position and the setpoint. This resulted in fast movement but caused significant overshooting and oscillations. Next, I kept the integral term constant and gradually increased the derivative term until the robot stopped overshooting, though this introduced a substantial steady-state error. Finally, I stopped adjusting the derivative term and increased the integral term until the steady-state error was eliminated.</p>
+                        <p>Depending on the robot's design, we can either increase the proportional term to make the robot reach its goal faster, with a higher likelihood of overshooting, or increase the derivative term to slow the robot down, reducing the probability of overshooting. I opted for the latter, ensuring the robot is less likely to overshoot.</p>
+
+                        <h3 class="section-subheading">Range of PID values</h3>
+                        <p>Before tuning the PID coefficients, it is critical to understand the effective ranges for each coefficient. We began with the proportional term. Given that the Time-of-Flight (TOF) sensor measures distances between 0 and 4000 millimeters, and the maximum PWM value is 255, the proportional term's effective range is between 0 and 1. This ensures that the control effort (PWM) is scaled appropriately to the sensor's input range.</p>
+                        <p>Next, we considered the integral term. Since the sum of the error accumulates over time, it is typically at least 10 times larger than the instantaneous error. Therefore, we set the range for the integral coefficient between 0 and 0.1. This prevents the integral action from accumulating too rapidly, which could lead to excessive overshooting and instability.</p>
+                        <p> Finally, for the derivative term, we noted that the rate of change of the error (the derivative) is generally much smaller than the error itself, often about 10 times smaller. Consequently, we set the derivative coefficient's range between 0 and 10. This allows the derivative action to provide adequate damping to counteract rapid changes in error without causing excessive sluggishness in the system's response.</p>    
+                        <p>By establishing these ranges, we ensured that our PID tuning process was both effective and efficient, providing a solid foundation for achieving optimal control performance. </p>
+                        
+                        <h3 class="section-subheading">LOG Data</h3>
+                        <p>To verify that the PID calculations are correct and that the robot's behavior aligns with expectations, I logged all relevant data. This data was stored in a structured array, allowing for efficient organization and retrieval. By doing so, I ensured that I could transmit this information via Bluetooth Low Energy (BLE). This approach enabled real-time monitoring and analysis of the robot's performance, facilitating prompt adjustments and fine-tuning of the PID parameters to achieve the desired control outcomes.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">struct</span> debugData{
+    <span style="color: #333399; font-weight: bold">int</span> timestamp;
+    <span style="color: #333399; font-weight: bold">int</span> setpoint;
+    <span style="color: #333399; font-weight: bold">int</span> distance;
+    <span style="color: #333399; font-weight: bold">int</span> error;
+    <span style="color: #333399; font-weight: bold">float</span> error_sum;
+    <span style="color: #333399; font-weight: bold">float</span> error_de;
+    <span style="color: #333399; font-weight: bold">int</span> d_old;
+    <span style="color: #333399; font-weight: bold">int</span> motor_speed;
+  };
+  <span style="color: #333399; font-weight: bold">int</span> <span style="color: #008800; font-weight: bold">const</span> arraysize <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1000</span>;
+  debugData data[arraysize];
+  <span style="color: #333399; font-weight: bold">int</span> array_index <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+  
+  <span style="color: #333399; font-weight: bold">void</span>
+  <span style="color: #0066BB; font-weight: bold">store_data</span>()
+  {
+    data[array_index].timestamp <span style="color: #333333">=</span> millis();
+    data[array_index].setpoint <span style="color: #333333">=</span> setpoint;
+    data[array_index].distance <span style="color: #333333">=</span> distance1;
+    data[array_index].error <span style="color: #333333">=</span> difference;
+    data[array_index].error_sum <span style="color: #333333">=</span> d_sum;
+    data[array_index].error_de <span style="color: #333333">=</span> d_derivative;
+    data[array_index].d_old <span style="color: #333333">=</span> d_old;
+    data[array_index].motor_speed <span style="color: #333333">=</span> motor_speed;
+  }
+  </pre></div>
+                        <p>I wrote a command <code>GET_ARRAY</code> that sends the data to the python script</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">case</span> GET_ARRAY:
+    <span style="color: #888888">// Extract the next value from the command string as an integer</span>
+    <span style="color: #008800; font-weight: bold">for</span>(<span style="color: #333399; font-weight: bold">int</span> i <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;i<span style="color: #333333">&lt;</span>arraysize;i<span style="color: #333333">++</span>){
+    tx_estring_value.clear();
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; timestamp: &quot;</span>);
+    tx_estring_value.append(data[i].timestamp);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; distance: &quot;</span>);
+    tx_estring_value.append(data[i].distance);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; error: &quot;</span>);
+    tx_estring_value.append(data[i].error);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; error_sum: &quot;</span>);
+    tx_estring_value.append(data[i].error_sum);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; d_old: &quot;</span>);
+    tx_estring_value.append(data[i].d_old);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; error_deri: &quot;</span>);
+    tx_estring_value.append(data[i].error_de);
+    tx_estring_value.append(<span style="background-color: #fff0f0">&quot; motor_speed: &quot;</span>);
+    tx_estring_value.append(data[i].motor_speed);
+    tx_characteristic_string.writeValue(tx_estring_value.c_str());
+
+    Serial.print(<span style="background-color: #fff0f0">&quot;Sent back: &quot;</span>);
+    Serial.println(tx_estring_value.c_str());
+    }
+    <span style="color: #008800; font-weight: bold">break</span>;
+</pre></div>
+
+                        <h2 class="section-heading">Implementation</h2>
+                        <h3 class="section-subheading">Proportional term</h3>
+                        <p>The proportional term in the PID controller is straightforward to calculate. It involves determining the error, which is the difference between the measured distance from the Time-of-Flight (ToF) sensor and the setpoint. The proportional term is then obtained by multiplying this error by the proportional coefficient (Kp).</p>
+                        <h3 class="section-subheading">Derivative term</h3>
+                        <p>To calculate the derivative of the error, we apply the formula for the derivative, which involves finding the rate of change of the error over time. This is done by taking the difference between the current error and the previous error, and then dividing by the time interval between these two measurements. Since the time interval between two measurements are very similar, we ignored this term. If we choose to increase this term, we just needs to increase the derivative coefficient (kd) more and nothing else will change. sThe derivative term is obtained by multiplying this rate of change by the derivative coefficient (Kd).</p>
+                        <p>Additionally, since the Artemis microcontroller operates faster than the ToF sensor, it often reads the same measurement multiple times before new data is available from the sensor. This can cause the calculated derivative of the error to incorrectly appear as zero when no new measurements are received. To address this, we update the derivative of the error only when there is a non-zero difference between the current and previous errors. If the error remains the same, we keep the derivative of the error unchanged.</p>
+                        <p>I tried to low pass the derivative term, but it does not show substantial improvement of controlling the robot. Consequently, we decided to abandon this approach and explore alternative strategies for optimizing the PID controller's tuning and operation.</p>
+                        <h3 class="section-subheading">Integral term</h3>
+                        <p>The integral term is obtained by adding up all errors over time. The optimal behavior for this term to increase in value for as long as the error is positive, to remain constant when the error is zero (i.e. we are staying at the desired position), and to decrease when the error is negative (i.e. we've overshot the desired position). However, a challenge arises when the system cannot precisely reach the desired position due to factors like mechanical limitations or external disturbances. In such cases, the integral term continues to accumulate, potentially leading to overshooting or instability as it attempts to compensate for the persistent error. Moreover, if the system remains stationary while the PID controller is active, such as when holding a robot in position, the integral term continues to increase unabated. This scenario, known as integrator windup, can adversely affect the system's behavior when the robot is released, causing it to exhibit undesired movements or oscillations due to the accumulated integral action.</p>
+                        <p>The simplest solution to solve the integrator windup is to clamp this term at some maximum value.</p>
+                        <p>These are the conditions under which we prevent the integrator from accumulating any more value:</p>
+                        <ol>
+                            <li>The controller output is saturated. In other words, when the pwm value is 255</li>
+                            <li>The sign of the controller output is the same as the sign of the error (i.e. the integrator is making the situation worse).</li>
+                        </ol>
+                        <p>As soon as the error switches sign, we unclamp the integrator term so that it immediately starts to decrease, limiting overshoot. I choose to clamp the integral term at 30000 and -30000.</p>
+                        <p>To sum up, only when the <code>motor_speed</code> is not 255 or -255 and the <code>motor_speed</code> and error has the same sign, I chose to increase the integral term. </p>
+                        <h3 class="section-subheading">Intermediate control value</h3>
+                        <p>To enhance motor control and provide more detailed PID tuning, I introduced an intermediate control value called <code>motor_control</code>. This value represents the sum of all three terms in the PID controller and is constrained to a range between -1000 and 1000. To account for the deadband of the motor, which is set at 40 units in my system, I implemented a linear mapping of <code>motor_control</code> to <code>motor_speed</code>. For <code>motor_speed</code>, which ranges from -255 to 255, I mapped <code>motor_control</code> in such a way that values below -40 are mapped to speeds between -255 and -40, while values above 40 are mapped to speeds between 40 and 255. This mapping ensures that the motor responds smoothly to changes in the control signal, with gradual adjustments around the deadband to prevent abrupt changes in motor speed.</p>
+                        <p>This code snippet below is the complete Implementation of the function <code>PID()</code> which is called repeatedly every loop after the function <code>sensor_TOF()</code> that updates the ToF sensor data.</p>
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span>
+    <span style="color: #0066BB; font-weight: bold">PID</span>()
+    {
+      difference <span style="color: #333333">=</span> distance1 <span style="color: #333333">-</span> setpoint;
+      <span style="color: #008800; font-weight: bold">if</span>( (motor_speed<span style="color: #333333">!=</span><span style="color: #0000DD; font-weight: bold">255</span>) <span style="color: #333333">&amp;&amp;</span> (motor_speed<span style="color: #333333">!=-</span><span style="color: #0000DD; font-weight: bold">255</span>) <span style="color: #333333">&amp;&amp;</span> (motor_speed<span style="color: #333333">&gt;=</span><span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> difference<span style="color: #333333">&gt;=</span><span style="color: #0000DD; font-weight: bold">0</span>) <span style="color: #333333">&amp;&amp;</span> (motor_speed<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> difference<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">0</span>)){
+        d_sum <span style="color: #333333">+=</span> difference;
+        <span style="color: #008800; font-weight: bold">if</span>(d_sum <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">30000</span>)
+          d_sum <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">30000</span>;
+        <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span>(d_sum <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">30000</span>)
+          d_sum <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">30000</span>;
+      }
+      <span style="color: #008800; font-weight: bold">if</span>(difference <span style="color: #333333">-</span> d_old <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span> <span style="color: #333333">&amp;&amp;</span> array_index <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
+      d_derivative <span style="color: #333333">=</span> <span style="color: #333399; font-weight: bold">float</span>(difference <span style="color: #333333">-</span> d_old);
+      }
+      d_old <span style="color: #333333">=</span> difference;
+      t_old <span style="color: #333333">=</span> millis();
+      motor_speed <span style="color: #333333">=</span> difference <span style="color: #333333">*</span> proportion <span style="color: #333333">+</span> d_derivative <span style="color: #333333">*</span> derivative; <span style="color: #333333">+</span> d_sum <span style="color: #333333">*</span> integral;
+        <span style="color: #008800; font-weight: bold">if</span>(motor_control <span style="color: #333333">&gt;</span> <span style="color: #0000DD; font-weight: bold">1000</span>)
+        motor_control <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">1000</span>;
+      <span style="color: #008800; font-weight: bold">else</span> <span style="color: #008800; font-weight: bold">if</span>(motor_control <span style="color: #333333">&lt;</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1000</span>)
+        motor_control <span style="color: #333333">=</span> <span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1000</span>;
+    
+      <span style="color: #008800; font-weight: bold">if</span>(motor_control <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
+        motor_speed <span style="color: #333333">=</span> motor_control <span style="color: #333333">/</span> <span style="color: #0000DD; font-weight: bold">1000</span> <span style="color: #333333">*</span> (<span style="color: #0000DD; font-weight: bold">215</span>) <span style="color: #333333">+</span> <span style="color: #0000DD; font-weight: bold">40</span>;
+      }
+      <span style="color: #008800; font-weight: bold">else</span>
+      {
+        motor_speed <span style="color: #333333">=</span> motor_control <span style="color: #333333">/</span> <span style="color: #0000DD; font-weight: bold">1000</span> <span style="color: #333333">*</span> (<span style="color: #0000DD; font-weight: bold">215</span>) <span style="color: #333333">-</span> <span style="color: #0000DD; font-weight: bold">40</span>;
+      }
+      <span style="color: #008800; font-weight: bold">if</span>(difference<span style="color: #333333">&lt;=</span><span style="color: #0000DD; font-weight: bold">10</span> <span style="color: #333333">&amp;&amp;</span> difference<span style="color: #333333">&gt;=-</span><span style="color: #0000DD; font-weight: bold">10</span>){
+        motor_speed <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">0</span>;
+      }
+      <span style="color: #008800; font-weight: bold">if</span>(motor_speed <span style="color: #333333">&gt;=</span> <span style="color: #0000DD; font-weight: bold">0</span>){
+        analogWrite(leftbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+        analogWrite(leftforward,motor_speed);
+        analogWrite(rightforward,(<span style="color: #333399; font-weight: bold">int</span>)(motor_speed<span style="color: #333333">/</span><span style="color: #6600EE; font-weight: bold">1.2</span>));
+        analogWrite(rightbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+        }
+      <span style="color: #008800; font-weight: bold">else</span>{
+        analogWrite(rightforward,<span style="color: #0000DD; font-weight: bold">0</span>);
+        analogWrite(rightbackward,(<span style="color: #333399; font-weight: bold">int</span>)(<span style="color: #333333">-</span>motor_speed<span style="color: #333333">/</span><span style="color: #6600EE; font-weight: bold">1.2</span>));
+        analogWrite(leftbackward,(<span style="color: #333333">-</span>motor_speed));
+        analogWrite(leftforward,<span style="color: #0000DD; font-weight: bold">0</span>);
+        }
+    }
+    </pre></div> 
+                        <p>After several trials, we found this combination of PID works really well:</p>
+                        <ul>
+                            <li><strong>Kp = 0.45</strong></li>
+                            <li><strong>Ki = 0.025</strong></li>
+                            <li><strong>Kp = 1.6</strong></li>
+                        </ul>
+                        <p></p>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

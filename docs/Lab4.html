@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 4</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab4/final.jpeg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Assemble the Motors and Explore Open Loop Control</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on March 5, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>The primary objective of this lab is to integrate the motors with the Artemis board and transition the car's control mechanism from manual to open loop. Additionally, the task entails the assembly of various sensors such as IMU and TOF alongside the motors and motor drivers, culminating in the final configuration of the fast robot for this course. At the end of the lab, we were able to use the Artemis board and two dual motor drivers to execute any pre-programmed series of movements.</p>
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                            <li> 1 x <a href="https://www.sparkfun.com/products/15443" class="link-primary">SparkFun RedBoard Artemis Nano</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/SUMPK-Charging-Braided-Compatible-Samsung/dp/B09Z6J21LY/ref=sr_1_4?keywords=usb%2Bc%2Bto%2Bc&qid=1636380583&qsid=147-6677549-1776715&refinements=p_n_feature_ten_browse-bin%3A23555327011&rnid=23555276011&s=pc&sr=1-4&sres=B08D9SB161%2CB08R68T84N%2CB01CZVEUIE%2CB01FM51812%2CB07VCZV3R4%2CB075V68NVR%2CB075GMKZWW%2CB093BVBRJT%2CB09BBBJ33F%2CB09C2D9Z7T%2CB012V56D2A%2CB092CYFQMP%2CB081L4V3DN%2CB07Y6ZJT1D%2CB07Y2XKPX5%2CB07VPYJV8V%2CB07THJGZ9Z%2CB08W2TP2TT%2CB0744BKDRD%2CB07THFJ1J5&srpt=ELECTRONIC_CABLE&th=1" class="link-primary">USB C-to-C cable</a></li>
+                            <li> 1 x <a href="https://www.mouser.com/ProductDetail/SparkFun/SEN-15335?qs=uwxL4vQweFMcls1MYZT00A%3D%3D" class="link-primary">9DOF IMU sensor</a></li>
+                            <li> 2 x <a href="https://www.pololu.com/product/3415" class="link-primary">4m ToF sensor</a></li>
+                            <li> 1 x <a href="https://www.sparkfun.com/products/18012" class="link-primary">QWICC Breakout board</a></li>
+                            <li> 2 x <a href="https://www.sparkfun.com/products/14426" class="link-primary">QWICC connector</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/dp/B07V56N33J?smid=A2ZDGCOOU4F0SF&ref_=chk_typ_imgToDp&th=1" class="link-primary">JST2 connector+cable</a></li>
+                            <li> 1 x <a href="https://force1rc.com/products/cyclone-remote-control-car-for-kids-adults" class="link-primary">Force1 RC car</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/URGENEX-Battery-Rechargeable-Quadcopter-Charger/dp/B08T9FB56F/ref=sr_1_3?keywords=lipo+battery+3.7V+850mah&qid=1639066404&sr=8-3" class="link-primary">Li-ion 3.7v 850mAh battery</a></li>
+                            <li> 2 x <a href="https://www.digikey.com/en/products/detail/pololu-corporation/2130/10450426" class="link-primary">Dual motor drivers</a></li>
+                        </ul>
+
+                        <h2 class="section-heading">Hardware connection</h2>
+
+                        <h3 class="section-subheading">Background</h3>
+                        <p>In order to control the motors saftely and efficiently, the best option is to use motor drivers. They bridge the gap between the low-power signals generated by microcontrollers and the high-power demands of motors. By regulating voltage and current, motor drivers ensure that motors receive the necessary power without risking damage to the controlling electronics. Additionally, motor drivers enable precise control over the direction and speed of motor rotation, often supporting features such as PWM input for speed regulation. Moreover, they incorporate protection mechanisms like overcurrent and thermal shutdown to safeguard both the motor and the driver from potential faults or overloads. Overall, motor drivers enhance the performance, reliability, and longevity of motor-driven systems by providing an effective interface for controlling motors in various applications.</p>
+                        <p>The motor driver we are using is the Pololu's DRV8833 dual motor driver. This is the <a href="https://www.pololu.com/product-info-merged/2130" class="link-primary">documentation</a> and the <a href="https://www.ti.com/lit/ds/symlink/drv8833.pdf?HQS=dis-dk-null-digikeymode-dsf-pf-null-wwe&ts=1710094467965&ref_url=https%253A%252F%252Fwww.ti.com%252Fgeneral%252Fdocs%252Fsuppproductinfo.tsp%253FdistId%253D10%2526gotoUrl%253Dhttps%253A%252F%252Fwww.ti.com%252Flit%252Fgpn%252Fdrv8833" class="link-primary">data sheet</a> for the dual motor driver. This motor driver has 16 pins in total. Ground connections <code>GND</code> are necessary for both motor power and control ground reference. Outputs (<code>AOUT1</code>, <code>AOUT2</code>, <code>BOUT1</code>, and <code>BOUT2</code>) are dedicated to motor half-bridge outputs. Logic input controls (<code>AIN1</code>, <code>AIN2</code>, <code>BIN1</code>, <code>BIN2</code>) allow for motor channel control with the ability to apply PWM. The <code>nSLEEP</code> pin induces low-power sleep mode when driven low, while <code>nFAULT</code> signals faults such as over-current or over-temperature conditions. Additionally, current sense pins (<code>AISEN</code>, <code>BISEN</code>) enable current limiting with appropriate modifications.</p>
+                        <p>As per the datasheet specifications, the motor driver is designed to manage two brushed DC motors within a voltage range of 2.7 V to 10.8 V, capable of providing a continuous supply of approximately 1.2 A per channel. Despite its ability to momentarily sustain a maximum of 2 A, this level of current proves insufficient for driving the motors at high speeds. Instead of opting for a pricier motor driver upgrade, we devised a solution: parallel-coupling the inputs and outputs of each dual motor driver. By utilizing two channels to drive each motor, we effectively double the current delivery without risking chip overheating. Two options were considered for this parallel coupling: either merging the two channels from separate motor drivers or consolidating them within the same driver. 
+                            However, due to variations in signal traversal times caused by differences in wiring lengths between the Artemis board and the motor drivers, the former approach was deemed impractical. Therefore, we elected to parallel two channels within the same motor driver, connecting the <code>BIN1/AIN1</code>, <code>BIN2/AIN2</code>, <code>BOUT1/AOUT1</code>, and <code>BOUT2/AOUT2</code> as illustrated in the figure below. Each motor driver is dedicated to controlling one motor, ensuring optimal performance and stability. With this configuration, each motor driver outputs can be paralleled to deliver 2.4 A continuous (4 A peak) to a single motor.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab4/schematic.png" alt="..." /></a>
+                        <p>According to the Artemis board <a href="https://cdn.sparkfun.com/assets/5/5/1/6/3/RedBoard-Artemis-Nano.pdf" class="link-primary">schematic</a>, all pins except pin 8 and 10 does not provide PWM functions. Thus, <code>A2</code> and <code>A3</code> pins on the Artemis board are used to connect to one motor driver, responsible for controlling the left motor, while pins <code>11</code> and <code>12</code> are allocated for controlling the right motor.</p>
+                        <p>I utilized one 850 mAh battery to power the Artemis board and employed a separate 850 mAh battery to drive the motor drivers. The grounds of both batteries are interconnected by connecting them to the ground on the Artemis board. Given that the motors draw significant current, separating the batteries ensures that the motor operations do not interfere with the Bluetooth connection or sensor readings. With this dual-battery arrangement, the motors, Bluetooth, and sensors can operate independently, optimizing performance and reliability.</p>
+                        
+                        <h3 class="section-subheading">Motor Assembly</h3>
+                        <p>The initial step involves connecting the input and output signals of a single motor driver, as depicted in the previous diagram. Opting for multi-threaded wires serves as a strategic choice, primarily for resilience during high accelerations, where the failure of one thread doesn't compromise the overall connection. Moreover, each wire is encased with protective shielding to mitigate the risk of accidental contact. The accompanying figure shows the configuration with added protective measures for improved safety and reliability. </p>
+                        <img class="img-fluid" src="assets/img/Lab4/motordriver.jpeg" alt="..." />                        
+                        <p>The next step involves testing the connection using an external power supply. The motor driver, as per the datasheet, can operate within a voltage range of 2.7 V to 10.8 V. Since our battery outputs at 3.7 V, we've set the external power supply to match this voltage. We also connected the motor driver to the Artemis board to generate a PWM signal for control. Specifically, pins <code>A2</code> and <code>A3</code> on the Artemis board are linked to <code>AIN1</code> and <code>BIN2</code> on the motor driver to transmit the PWM signal. Additionally, the <code>GND</code> pin on the Artemis board is connected to the <code>GND</code> pin on the motor driver. The connection setup is illustrated in the figure below.</p>
+                        <img class="img-fluid" src="assets/img/Lab4/Artemis+md.jpeg" alt="..." />
+                        <p>We utilized the <code>analogWrite</code> commands to generate PWM signals and measured the power at the motor driver output using an oscilloscope. The code snippet is shown below. We conducted tests with different PWM values ranging from 32 to 255. The results are depicted in the figure below.</p>
+
+                        <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#define leftforward A2</span>
+<span style="color: #557799">#define leftbackward A3</span>
+
+<span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">setup</span>() {
+pinMode(leftforward, OUTPUT);
+pinMode(leftbackward, OUTPUT); }
+
+<span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">loop</span>() {
+analogWrite(leftforward, <span style="color: #0000DD; font-weight: bold">64</span>);
+analogWrite(leftbackward, <span style="color: #0000DD; font-weight: bold">0</span>); }
+</pre></div>
+                        <p></p>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab4/32.jpeg" alt="Figure 1" class="img-fluid">
+                                    <figcaption>PWM value equals 32</figcaption>
+                                </div>                                
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab4/64.jpeg" alt="Figure 2" class="img-fluid">
+                                    <figcaption>PWM value equals 64</figcaption>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab4/128.jpeg" alt="Figure 1" class="img-fluid">
+                                    <figcaption>PWM value equals 128</figcaption>
+                                </div>
+                                <div class="col-md-6">
+                                    <img src="assets/img/Lab4/255.jpeg" alt="Figure 2" class="img-fluid">
+                                    <figcaption>PWM value equals 255</figcaption>
+                                </div>
+                            </div>
+                        </div>
+                        <p>Next, we disassembled the Force1 RC car and cut the original remote control PCB. The disassembled car is shown in the accompanying figure.</p>
+                        <img class="img-fluid" src="assets/img/Lab4/apart.jpeg" alt="..." />
+                        <p>Then we connected the output of the motor driver to the motor in the Force1 car and tested it by sending a PWM signal from the Artemis board. The code for generating the PWM signal remains unchanged from the previous example. According to this video, the wheels spin normally in both directions when the motor driver is powered by the 850mAh battery.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/tuMFmIKQvNQ">
+                        </iframe>
+                        <p>We repeated the previous steps for the other motor driver and motor. And the final wiring is shown in the figure below. We also tested both motors with different PWM signals from the Artemis board. We powerd the Artemis board and motor drivers from separate batteries to isolate electrical noise and prevent potential damage to sensitive components. This setup also allows for optimized voltage and current supply to each component, ensuring stable and reliable operation.</p>
+                        <img class="img-fluid" src="assets/img/Lab4/twomotors.jpeg" alt="..." />
+                        <p></p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/oksYrkjYhCU">
+                        </iframe>
+                        <h3 class="section-subheading">Sensor Assembly</h3>
+                        <p>After the motor and motor drivers are tested, the different sensors from the previous labs are also installed in the car. The figure below is the car with everything hooked up.</p>
+                        <img class="img-fluid" src="assets/img/Lab4/final.jpeg" alt="..." />
+                        <h3 class="section-subheading">Testing</h3>
+                        <p>After installing everything inside the car chassis, we tried running the car on the ground. As shown in the code snippet below, both motor will move forward with PWM value as 64. In addition, we added a timer such that the motor will turn off automatically after the program starts for four seconds. </p>
+                        
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #557799">#define leftforward A2</span>
+    <span style="color: #557799">#define leftbackward A3</span>
+    <span style="color: #557799">#define rightforward 11</span>
+    <span style="color: #557799">#define rightbackward 12</span>
+    
+    <span style="color: #333399; font-weight: bold">unsigned</span> <span style="color: #333399; font-weight: bold">long</span> startTime;
+    <span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">unsigned</span> <span style="color: #333399; font-weight: bold">long</span> TOTAL_DURATION <span style="color: #333333">=</span> <span style="color: #0000DD; font-weight: bold">4000</span>;
+    
+    <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">setup</span>() {
+      <span style="color: #888888">// put your setup code here, to run once:</span>
+    pinMode(leftforward, OUTPUT);
+    pinMode(leftbackward, OUTPUT);
+    pinMode(rightforward, OUTPUT);
+    pinMode(rightbackward, OUTPUT);
+    startTime <span style="color: #333333">=</span> millis();
+    }
+    
+    <span style="color: #333399; font-weight: bold">void</span> <span style="color: #0066BB; font-weight: bold">loop</span>() {
+    <span style="color: #008800; font-weight: bold">if</span>(millis() <span style="color: #333333">-</span> startTime <span style="color: #333333">&lt;=</span> TOTAL_DURATION){
+      analogWrite(leftforward, <span style="color: #0000DD; font-weight: bold">64</span>);
+      analogWrite(leftbackward, <span style="color: #0000DD; font-weight: bold">0</span>);
+      analogWrite(rightforward,<span style="color: #0000DD; font-weight: bold">64</span>);
+      analogWrite(rightbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+    }
+    <span style="color: #008800; font-weight: bold">else</span>{
+      analogWrite(leftforward, <span style="color: #0000DD; font-weight: bold">0</span>);
+      analogWrite(leftbackward, <span style="color: #0000DD; font-weight: bold">0</span>);
+      analogWrite(rightforward,<span style="color: #0000DD; font-weight: bold">0</span>);
+      analogWrite(rightbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+      }
+    }
+    </pre></div>
+
+                        <p>The video below shows that the car moves as expected.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/naQu_yzHPK0">
+                        </iframe>
+
+                        <h2 class="section-heading">Explore the lower limit in PWM value</h2>
+                        <p>45,33</p>
+                        
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008800; font-weight: bold">case</span> GET_PWM_VALUE:
+    <span style="color: #333399; font-weight: bold">int</span> pwm_value;
+    <span style="color: #888888">// Extract the next value from the command string as an integer</span>
+    success <span style="color: #333333">=</span> robot_cmd.get_next_value(pwm_value);
+    <span style="color: #008800; font-weight: bold">if</span> (<span style="color: #333333">!</span>success)
+        <span style="color: #008800; font-weight: bold">return</span>;
+    
+    Serial.print(<span style="background-color: #fff0f0">&quot;PWM value is &quot;</span>);
+    Serial.println(pwm_value);
+    analogWrite(leftforward,pwm_value);
+    analogWrite(leftbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+    analogWrite(rightforward,pwm_value);
+    analogWrite(rightbackward,<span style="color: #0000DD; font-weight: bold">0</span>);
+    <span style="color: #008800; font-weight: bold">break</span>;
+</pre></div>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>

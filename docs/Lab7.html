@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 7</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab7/KF_image.png')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Kalman Filter</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on March 26, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>In Lab 7, our objective is to deploy a Kalman Filter, a powerful tool that promises to enhance the execution of behaviors previously explored in Lab 5. Our aim now is to leverage the Kalman Filter to augment the utilization of our slowly sampled Time-of-Flight (ToF) values. By integrating this advanced filtering technique, we endeavor to accelerate our approach towards the wall with precision, optimizing our ability to halt precisely 1ft away from the obstacle or execute a swift turn within a 2ft radius. This strategic enhancement not only facilitates faster navigation but also ensures heightened accuracy and efficiency in achieving our desired robotic behaviors.</p>
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                           <li> 1 x Fully assembled robot, with <a href="https://www.sparkfun.com/products/15443" class="link-primary">Artemis</a>, <a href="https://www.pololu.com/product/3415" class="link-primary">ToF sensor</a>, and an <a href="https://www.mouser.com/ProductDetail/SparkFun/SEN-15335?qs=uwxL4vQweFMcls1MYZT00A%3D%3D" class="link-primary">IMU.</a></li>
+                        </ul>
+
+                        <h2 class="section-heading">Kalman Filter</h2>
+
+                        <h3 class="section-subheading">Background</h3>
+                        <p>The Kalman filter is a powerful algorithm used in signal processing and control systems to estimate the state of a dynamic system from a series of incomplete and noisy measurements. Developed by Rudolf E. Kálmán in the 1960s, it is widely applied in fields such as navigation, robotics, and finance. The Kalman filter operates recursively, continuously updating its state estimates as new measurements become available, which makes it efficient for real-time data processing. The algorithm consists of two main steps: prediction and update. During the prediction step, it uses a model of the system's dynamics to forecast the next state, incorporating known control inputs. In the update step, it refines this prediction using the latest measurement, combining the predicted state and the actual observation to produce a more accurate estimate. The Kalman filter maintains an error covariance matrix that quantifies the uncertainty of the state estimate, updating this matrix at each step to weigh the reliability of predictions and measurements appropriately. This mathematical formulation allows the Kalman filter to provide optimal estimates for linear systems with Gaussian noise, and it can be extended to nonlinear systems through variations like the Extended Kalman Filter (EKF) and Unscented Kalman Filter (UKF). Its applications are diverse, including navigation and GPS for vehicle and aircraft position tracking, robotics for localization and sensor fusion, finance for noise reduction and trend prediction, and signal processing for enhancing signal clarity. The Kalman filter's ability to handle uncertainty and noise effectively makes it a fundamental tool in modern engineering and science.</p>
+
+                        <h2 class="section-subheading">Implementation</h2>
+                        <h3 class="section-subheading">Estimate Drag and Mass</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/Drag and Mass.png" alt="..." /></a>
+                        <p>After receiving the data sent from the Artemis microcontroller via the Bluetooth Low Energy (BLE) channel, we can extract and process the values of time, distance, and pulse width modulation (PWM). The following code snippet demonstrates how to truncate and analyze a specific fraction of the data array for further analysis:</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/drag_and_mass.png" alt="..." /></a>
+                        <p>Using the code above, we can plot the value of distance, motor speed and velocity versus time.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/distance.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/motor_input.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/velocity.png" alt="..." /></a>
+                        <p>Based on the distance readings and their corresponding timestamps, I determined the steady-state speed to be approximately 3000 mm/s. Additionally, the 90% rise time was calculated to be around 0.50 seconds, with the speed at this rise time reaching 2.17 m/s.</p>
+                        <p>Using this value and the formula force and drag, we can determine the drag and mass of the system:</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/dm.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/dm_value.png" alt="..." /></a>
+
+                        <h3 class="section-subheading">Initialize Kalman Filter</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/kf_eq.png" alt="..." /></a>
+                        <p>The equations for the Kalman Filter are depicted in the lecture slides, and several key parameters need to be identified to set up the filter effectively. These include the matrices A, B and C for constructing the state space equation, as well as the noise matrices Sigma U and Sigma Z.</p>
+                        <ul>
+                            <li><strong>Matrix A:</strong> This is the state transition matrix, which models how the system transitions from one state to another.</li>
+                            <li><strong>Matrix B:</strong> This is the control input matrix, which models the influence of control inputs on the state.</li>
+                            <li><strong>Matrix C:</strong> This is the observation matrix, which models how the state is mapped to the observed measurements.</li>
+                            <li><strong>Noise Matrix Sigma u:</strong> This represents the process noise covariance, capturing the uncertainty in the system dynamics.</li>
+                            <li><strong>Noise Matrix Sigma z:</strong> This represents the measurement noise covariance, capturing the uncertainty in the observations.</li>
+                        </ul>
+                        <p>Using these parameters, the Kalman Filter can be systematically implemented to optimally estimate the state of the system based on the noisy measurements and model predictions. This setup enables more accurate and reliable state estimation, improving the system's overall performance in dynamic environments.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/matrix.png" alt="..." /></a>
+                        <h3 class="section-subheading">Implement Kalman Filter in python</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/KF.png" alt="..." /></a>
+                        <p>The figures below are all result I get.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/1.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/2.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/3.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/4.png" alt="..." /></a>
+                        <h3 class="section-subheading">Kalman Filter with faster frequency</h3>
+                        <p>I have also modified the sampling rate to enable the Kalman Filter to operate at a higher frequency. Consequently, with delta T equals 20 ms, the prediction step is used to estimate the state of the car between readings. This prediction step is analogous to the linear extrapolation step from Lab 6, but it is implemented using the Kalman Filter's prediction mechanism instead, providing a more refined and accurate state estimation.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/frequency1.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/frequency2.png" alt="..." /></a>
+                        <h3 class="section-subheading">Implementation on Robot</h3>
+                        <p>By implementing the model described above in the robot, we can achieve a faster controller. If the Time-of-Flight (ToF) sensor data is not available, I set the d_tof variable to -100, indicating its unavailability. In this case, the Kalman Filter will perform the prediction step only, allowing us to still estimate the distance and generate a motor input value. When the sensor data becomes available, both the prediction and update steps of the Kalman Filter will be executed. Here is the Kalman Filter function in Arduino. I encountered an overflow issue when using the <code>Invert()</code> function for the matrix calculation C*sigma_p*~C+sig_z. To resolve this, I chose to take the reciprocal first, since it was a 1x1 matrix, and then convert it back to a matrix:</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #333399; font-weight: bold">void</span>
+    <span style="color: #0066BB; font-weight: bold">kalmanfilter</span>()
+    {
+        <span style="color: #888888">// previous state</span>
+        state(<span style="color: #0000DD; font-weight: bold">0</span>)<span style="color: #333333">=-</span><span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">*</span>datas_tof[index_tof<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>].d_kf;<span style="color: #888888">//x=-d</span>
+        state(<span style="color: #0000DD; font-weight: bold">1</span>)<span style="color: #333333">=</span>datas_tof[index_tof<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>].v_kf;<span style="color: #888888">//v</span>
+    
+        <span style="color: #333399; font-weight: bold">int</span> u_prev;<span style="color: #888888">//control</span>
+        Matrix<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">&gt;</span> u<span style="color: #333333">=</span>{datas_tof[index_tof<span style="color: #333333">-</span><span style="color: #0000DD; font-weight: bold">1</span>].motor_input<span style="color: #333333">/</span>SPEED_BASE};<span style="color: #888888">//normalize</span>
+        Matrix<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">&gt;</span> Y<span style="color: #333333">=</span>{datas_tof[index_tof].d_tof};<span style="color: #888888">//current measurement</span>
+        
+        <span style="color: #888888">//prediction</span>
+        Matrix<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">2</span>,<span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">&gt;</span> mu_p;
+        Matrix<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">2</span>,<span style="color: #0000DD; font-weight: bold">2</span><span style="color: #333333">&gt;</span> sigma_p;
+        mu_p<span style="color: #333333">=</span>Ad<span style="color: #333333">*</span>state<span style="color: #333333">+</span>Bd<span style="color: #333333">*</span>u;
+        sigma_p<span style="color: #333333">=</span>Ad<span style="color: #333333">*</span>sigma<span style="color: #333333">*~</span>Ad <span style="color: #333333">+</span> sig_u;
+    
+        <span style="color: #008800; font-weight: bold">if</span>(Y(<span style="color: #0000DD; font-weight: bold">0</span>)<span style="color: #333333">&gt;</span><span style="color: #0000DD; font-weight: bold">0</span>){<span style="color: #888888">//tof distance avaiable, update</span>
+            Matrix<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">2</span>,<span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">&gt;</span> kf_gain;
+            Matrix<span style="color: #333333">&lt;</span><span style="color: #0000DD; font-weight: bold">1</span>,<span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">&gt;</span> S,S_inv;
+            S<span style="color: #333333">=</span>C<span style="color: #333333">*</span>sigma_p<span style="color: #333333">*~</span>C<span style="color: #333333">+</span>sig_z;
+            S_inv(<span style="color: #0000DD; font-weight: bold">0</span>)<span style="color: #333333">=</span><span style="color: #0000DD; font-weight: bold">1</span><span style="color: #333333">/</span>S(<span style="color: #0000DD; font-weight: bold">0</span>);
+            kf_gain<span style="color: #333333">=</span>sigma_p<span style="color: #333333">*~</span>C<span style="color: #333333">*</span>S_inv;
+            state<span style="color: #333333">=</span>mu_p<span style="color: #333333">+</span>kf_gain<span style="color: #333333">*</span>(Y<span style="color: #333333">-</span>C<span style="color: #333333">*</span>mu_p);
+            sigma<span style="color: #333333">=</span>(I<span style="color: #333333">-</span>kf_gain<span style="color: #333333">*</span>C)<span style="color: #333333">*</span>sigma_p;
+        }
+        <span style="color: #008800; font-weight: bold">else</span>{<span style="color: #888888">// no measurement, no update</span>
+            state<span style="color: #333333">=</span>mu_p;
+            sigma<span style="color: #333333">=</span>sigma_p;
+        }
+        <span style="color: #888888">// record datas</span>
+        datas_tof[index_tof].d_kf<span style="color: #333333">=</span>state(<span style="color: #0000DD; font-weight: bold">0</span>)<span style="color: #333333">*-</span><span style="color: #0000DD; font-weight: bold">1</span>;
+        datas_tof[index_tof].v_kf<span style="color: #333333">=</span>state(<span style="color: #0000DD; font-weight: bold">1</span>);
+    }
+    </pre></div>
+                        <p> </p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab7/KFRobot.png" alt="..." /></a>
+
+
+                        <h3 class="section-subheading">Conclusion</h3>
+                        <p>
+                            This lab aims to understand the performance of the Kalman Filter and assess its effectiveness, which is crucial for improving navigation and predicting recorded data. By implementing the Kalman Filter in a real-world robotic system, we can evaluate how well it integrates noisy sensor data to provide accurate state estimations. This process not only enhances the robot's navigation capabilities by offering more precise distance and position estimates but also improves its ability to predict future states based on past and current observations. The insights gained from this lab will demonstrate the practical benefits of the Kalman Filter in dynamic environments, showcasing its utility in tasks that require reliable data integration and real-time decision-making.</p>
+
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
