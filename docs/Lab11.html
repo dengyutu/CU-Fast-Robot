@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 11</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab11/simulation.png')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Real Localization</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on April 30, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Localization in Simulation</h2>
+                        <p>The figure below depicts the navigation and localization outcomes within the simulator. Trajectories are represented by red, green, and blue lines corresponding to the odometry (odom), ground truth, and Bayes filter belief, respectively. It is evident from the visualization that the trajectories produced by the Bayes filter closely approximate the ground truth trajectory, indicating the effectiveness of the filtering approach in localizing the robot accurately.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/simulation.png" alt="..." /></a>
+
+                        <h2 class="section-heading">Perform Observation Loop</h2>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/code1.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/code2.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/code3.png" alt="..." /></a>
+                        <p>I used the following four marked arena locations from Lab 9 as known poses and ran the update step at each of them:                        </p>                        
+                        <ul>
+                            <li>(-3, -2) ft</li>
+                            <li>(5, 3) ft</li>
+                            <li>(5, -3) ft</li>
+                            <li>(0, 3) ft</li>
+                        </ul>
+
+                        <h2 class="section-heading">Result</h2>
+                        <p>Below are the results for each marked location. In each plot, the green dot represents the ground truth, which was manually added in Python for each placement of the car. The blue dot indicates the belief state after the Bayes update step. These visualizations provide a comparison between the estimated position generated by the Bayes filter and the actual position of the robot as determined by ground truth data.</p>
+                        <h3 class="section-heading">Marked Point at(-3,-2)</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/-3-2_belief.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/-3-2_gt.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/-3-2_log.png" alt="..." /></a>
+                        <p>The localization at this point gives very accurate result. The blue point and green point nearly overlaps with each other.</p>
+
+                        <h3 class="section-heading">Marked Point at(5,3)</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/53_belief.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/53_gt.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/53_log.png" alt="..." /></a>
+                        <p>The discrepancy in localization accuracy at this particular marked point is likely attributed to the inaccurate data collected during that instance. This deviation is primarily caused by a significant fluctuation in the Time-of-Flight (ToF) sensor readings, which abruptly shifted from approximately 3000 to 500 and subsequently reverted to 3000 due to the presence of an obstruction, presumably the box in the middle. Such fluctuations can considerably impact the reliability of the localization process, leading to a noticeable deviation between the estimated belief and the actual ground truth position.</p>
+
+                        <h3 class="section-heading">Marked Point at(5,-3)</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/5-3_belief.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/5-3_gt.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/5-3_log.png" alt="..." /></a>
+                        <p>The localization at this point gives very accurate result. The blue point and green point nearly overlaps with each other.</p>
+
+                        <h3 class="section-heading">Marked Point at(0,3)</h3>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/03_belief.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/03_gt.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab11/03_log.png" alt="..." /></a>
+                        <p>The localization at this point gives very accurate result. The blue point and green point nearly overlaps with each other.</p>
+                    
+                        <h2 class="section-heading">Conclusion</h2>
+                        <p>It's immensely gratifying to witness the culmination of our efforts in this lab, which serves as a pivotal milestone in integrating various systems and principles we've been diligently working on throughout the semester. These promising results underscore the effectiveness of our localization process, laying a solid foundation for our final lab endeavor. As we prepare to leverage localization for planning and executing a path through the arena in our upcoming lab, the success observed here instills confidence and serves as a testament to our progress and dedication. With our collective efforts and the insights gained from this lab, I'm optimistic about achieving further success in our final endeavor.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
