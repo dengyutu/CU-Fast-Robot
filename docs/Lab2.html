@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 2</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab2/IMU2.png')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Explore the IMU Sensor</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on Feb 13, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                       <p>The purpose of this lab is to get famaliar with the inertial measurement unit (IMU) sensors and test its functionalities and characters so that we can equip them on the robot.</p>
+                        <h2 class="section-heading">Parts required</h2>
+                        <ul>
+                            <li> 1 x <a href="https://www.sparkfun.com/products/15443" class="link-primary">SparkFun RedBoard Artemis Nano</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/SUMPK-Charging-Braided-Compatible-Samsung/dp/B09Z6J21LY/ref=sr_1_4?keywords=usb%2Bc%2Bto%2Bc&qid=1636380583&qsid=147-6677549-1776715&refinements=p_n_feature_ten_browse-bin%3A23555327011&rnid=23555276011&s=pc&sr=1-4&sres=B08D9SB161%2CB08R68T84N%2CB01CZVEUIE%2CB01FM51812%2CB07VCZV3R4%2CB075V68NVR%2CB075GMKZWW%2CB093BVBRJT%2CB09BBBJ33F%2CB09C2D9Z7T%2CB012V56D2A%2CB092CYFQMP%2CB081L4V3DN%2CB07Y6ZJT1D%2CB07Y2XKPX5%2CB07VPYJV8V%2CB07THJGZ9Z%2CB08W2TP2TT%2CB0744BKDRD%2CB07THFJ1J5&srpt=ELECTRONIC_CABLE&th=1" class="link-primary">USB C-to-C cable</a></li>
+                            <li> 1 x <a href="https://www.mouser.com/ProductDetail/SparkFun/SEN-15335?qs=uwxL4vQweFMcls1MYZT00A%3D%3D" class="link-primary">9DOF IMU sensor</a></li>
+                            <li> 1 x <a href="https://force1rc.com/products/cyclone-remote-control-car-for-kids-adults" class="link-primary">Force1 RC car</a></li>
+                            <li> 1 x <a href="https://www.amazon.com/URGENEX-Battery-Rechargeable-Quadcopter-Charger/dp/B08T9FB56F/ref=sr_1_3?keywords=lipo+battery+3.7V+850mah&qid=1639066404&sr=8-3" class="link-primary">Li-Ion 3.7V 850mAh battery</a></li>
+                       </ul>
+
+                        <h2 class="section-heading">IMU sensor</h2>
+                        <h3 class="section-subheading">Background</h2>
+                        <p>An Inertial Measurement Unit (IMU) is a sensor module that combines multiple sensors to measure and report specific aspects of an object's motion and orientation. Typically, an IMU includes accelerometers, gyroscopes, and magnetometers, each serving a distinct purpose. Accelerometers measure linear acceleration along multiple axes, providing information about changes in velocity and orientation. Gyroscopes measure angular velocity or rotational rate, indicating changes in orientation over time. Magnetometers detect changes in magnetic field strength, aiding in orientation determination relative to the Earth's magnetic field. By combining data from these sensors, an IMU can accurately track an object's movement in three-dimensional space, making it a crucial component in various applications such as navigation systems, robotics, virtual reality, and motion tracking.</p>
+
+                        <h3 class="section-subheading">Hardware connection</h3>
+                        <p>I used the Qwiic connector to connect the IMU breakout board to my Artemis through the I2C port and installed SparkFun's ICM 20948 Arduino library.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab2/lab2_breakout.jpeg" alt="..." /></a>
+                        
+                        <p>The SparkFun Example1_Basics code was executed to validate the normal operation of the IMU sensor. It's worth noting that in the example code, the AD0_VAL is predefined as 1 by default, setting the last bit of the I2C address to 1. However, in our setup, the ADR jumper remained open, necessitating an adjustment of the AD0_VAL to 0 to ensure proper recognition of the sensor. To visually confirm the IMU's functionality, we made slight modifications to the example code's serial output format to facilitate compatibility with the Better Serial Plotter. The resulting plots were demonstrated in the accompanying video. The upper plot illustrates the accelerometer readings along the XYZ axes, while the lower plot depicts the gyroscope readings. These visual representations offer valuable insights into the sensor's performance and behavior, aiding in the assessment of its functionality and accuracy.</p>
+                        <p>When the IMU is slowly rotated on a plane perpendicular to the Z-axis, we observe noticeable fluctuations in the accelerometer readings along the X and Y axes. This phenomenon occurs because the accelerometer measures both gravitational acceleration and any linear acceleration along its axes. As the sensor rotates, the gravitational component sensed by the accelerometer changes, resulting in fluctuations in the readings. In contrast, the gyroscope readings remain relatively stable during slow rotations. Gyroscopes measure angular velocity, indicating the rate of change in orientation, and thus are less affected by changes in gravitational acceleration.</p>
+                        <p>However, when the IMU is rapidly rotated, the accelerometer readings exhibit larger fluctuations. This is because rapid rotations induce significant angular changes, causing the sensor to experience greater linear acceleration along its axes due to the centrifugal force effect. Consequently, the accelerometer values reflect these rapid changes in orientation. Additionally, the gyroscope readings also show noticeable variations during rapid rotations. Gyroscopes measure the rate of change in orientation directly, and thus, they are sensitive to rapid angular velocity changes, resulting in fluctuations in their readings. Overall, by observing these fluctuations in both accelerometer and gyroscope readings, we can gain valuable insights into the dynamic motion and behavior of the IMU sensor under different rotational conditions.</p>
+                        
+                        <h3 class="section-subheading">Accelerometers</h3>
+                        <p>Roll, pitch and roll are the angles of rotation around the xyz axis respectively as shown in figure below. </p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab2/angle_directions.jpeg" alt="..." /></a>
+                        <p>We can calculate the pitch and roll based on the code snippet below:</p>
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">pitch_acc <span style="color: #333333">=</span> atan2(myICM.accX(),myICM.accZ());
+    pitch_acc <span style="color: #333333">=</span> pitch_acc<span style="color: #333333">*</span><span style="color: #0000DD; font-weight: bold">180</span><span style="color: #333333">/</span>M_PI;
+    roll_acc <span style="color: #333333">=</span> atan2(myICM.accY(),myICM.accZ());
+    roll_acc<span style="color: #333333">=</span>roll_acc<span style="color: #333333">*</span><span style="color: #0000DD; font-weight: bold">180</span><span style="color: #333333">/</span>M_PI;
+    </pre></div>
+
+                        <h3 class="section-subheading">Frequency Response</h3>
+                        <p>This is the behavior when I tapped the IMU sensor</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab2/IMU_tap.jpeg" alt="..." /></a>
+                        <p>I changed the data to the frequency domain: </p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab2/IMU_tap_frequency_fftshift.jpeg" alt="..." /></a>
+                        <p>There are some high frequency spikes in 5-10Hz. So I chose to use a 5Hz cut-off frequency. Therefore the RC = 1 / (2*pi*f) = 1 / (2*pi*5) =0.0318. Given that my sampling period is 30ms, alpha is T / (T+RC) =0.4854.</p>
+                        <p>Upon observation, I noticed that the angle values exhibited jitter, likely stemming from uncorrelated noise in the sensor readings. To mitigate this issue, I implemented a simple averaging technique by taking the average of every five consecutive angle measurements and treating it as the new output. The results of this approach are illustrated in the graph: the raw pitch data is represented in red, while the orange line denotes the output after averaging. Additionally, I applied a complementary filter to the data, represented by the blue line, to further enhance the accuracy of the angle estimation. The complementary filter combines the low-frequency response of the accelerometer with the high-frequency response of the gyroscope to produce a more stable and accurate output. Overall, these modifications effectively reduced the jitter in the angle values, resulting in smoother and more reliable pitch data for use in subsequent analyses or control applications.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab2/IMU_tapping_seperate.png" alt="..." /></a>
+                        
+                        <h3 class="section-subheading">Gyroscopes</h3>
+                        <p>To calculate pitch, roll, and yaw from the gyroscope's degrees per second, I implemented the following equations on the Artemis to integrate over time.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab2/equation.png" alt="..." /></a>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">prev_time <span style="color: #333333">=</span> curr_time;
+curr_time <span style="color: #333333">=</span> millis();
+<span style="color: #333399; font-weight: bold">float</span> gyr_x <span style="color: #333333">=</span> myICM.gyrX();
+roll_gyro <span style="color: #333333">+=</span> gyr_x <span style="color: #333333">*</span> (curr_time <span style="color: #333333">-</span> prev_time) <span style="color: #333333">/</span> <span style="color: #6600EE; font-weight: bold">1000.0</span>;
+<span style="color: #333399; font-weight: bold">float</span> gyr_y <span style="color: #333333">=</span> myICM.gyrY();
+pitch_gyro <span style="color: #333333">-=</span> gyr_y <span style="color: #333333">*</span> (curr_time <span style="color: #333333">-</span> prev_time) <span style="color: #333333">/</span> <span style="color: #6600EE; font-weight: bold">1000.0</span>;
+<span style="color: #333399; font-weight: bold">float</span> gyr_z <span style="color: #333333">=</span> myICM.gyrZ();
+yaw_gyro <span style="color: #333333">-=</span> gyr_z <span style="color: #333333">*</span> (curr_time <span style="color: #333333">-</span> prev_time) <span style="color: #333333">/</span> <span style="color: #6600EE; font-weight: bold">1000.0</span>;
+</pre></div>
+
+                        <p>As with the accelerometer earlier, I tested the calculations by inducing pitches and rolls of 0, -90, and 90 degrees. Plotting the gyroscope measurements, I observed that:</p>
+                        <ul>
+                            <li>the gyroscope data is significantly less noisy</li>
+                            <li>the gyroscope data drifts over time</li>
+                            <li>when the sampling frequency decreases, the accuracy decreases. This is because when calculating the current tilt angles by integrating the angular velocities, we assume that the angular velosities don't change during the sampling period.</li>
+                        </ul>
+
+                        <p>Given that the gyroscope drifts a lot, I would like to trust more on the accelerometer. I chose the alpha here to be 0.8.</p>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">integrating AG
+    <span style="color: #008800; font-weight: bold">const</span> <span style="color: #333399; font-weight: bold">float</span> alpha_AG <span style="color: #333333">=</span> <span style="color: #6600EE; font-weight: bold">0.8</span>; 
+    <span style="color: #333399; font-weight: bold">float</span> pitch_comp <span style="color: #333333">=</span> (pitch_gyro)<span style="color: #333333">*</span>(<span style="color: #0000DD; font-weight: bold">1</span> <span style="color: #333333">-</span> alpha_AG) <span style="color: #333333">+</span> pitch_acc<span style="color: #333333">*</span>alpha_AG;
+    <span style="color: #333399; font-weight: bold">float</span> roll_comp <span style="color: #333333">=</span> (pitch_gyro)<span style="color: #333333">*</span>(<span style="color: #0000DD; font-weight: bold">1</span> <span style="color: #333333">-</span> alpha_AG) <span style="color: #333333">+</span> roll_acc<span style="color: #333333">*</span>alpha_AG;
+    <span style="color: #333399; font-weight: bold">float</span> yaw_g <span style="color: #333333">=</span> yaw_g <span style="color: #333333">+</span> yaw_gyro;
+    </pre></div>
+
+                        <p>Here is the demo video.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/Y-PkExKgncs">
+                        </iframe>
+
+                        <h2 class="section-heading">Conclusion</h2>
+                        <p>Engaging in this lab was truly enlightening as it provided me with hands-on experience working with a real sensor and navigating through genuine constraints. Through this practical application, I gained valuable insights into the intricacies and challenges associated with sensor integration and data processing. I'm particularly enthusiastic about putting my IMU recording system to the test on the RC car once we attach the Artemis board. This transition to a real-world scenario promises to be both rewarding and insightful, as it will allow me to apply the knowledge and skills acquired in this lab to a tangible project. I anticipate encountering new challenges and opportunities for learning as we delve deeper into the implementation and optimization of our sensor-based system. This journey represents an exciting step forward in my exploration of robotics and sensor technologies, and I'm eager to see the results of our efforts manifest in the RC car's performance and functionality.</p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
