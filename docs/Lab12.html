@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Web page for ECE 5160: Fast Robots (2024SP)." />
+        <meta name="author" content="Dengyu(Spud) Tu" />
+        <title>Fast Robot: Lab 12</title>
+        <link rel="icon" type="image/x-icon" href="assets/robot.png" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">Fast Robots Lab Notebook</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/Lab12/Trajectory.png')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Path Planning and Execution</h1>
+                            <h2 class="subheading"></h2>
+                            <span class="meta">
+                                Posted by Dengyu(Spud) Tu
+                                <!--<a href="#!">Dengyu</a>-->
+                                on May 15, 2024
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <h2 class="section-heading">Introduction</h2>
+                        <p>The objective of this lab is to guide the robot through a predetermined series of waypoints within a designated map area with maximum efficiency and precision. The coordinates of the specified trajectory, along with a visual representation of the route on the map, are provided below. By adhering to the given waypoints, the robot is tasked with navigating through the map swiftly and accurately, showcasing its ability to follow predefined paths and effectively maneuver within its environment. This exercise serves as a practical demonstration of the robot's navigational capabilities and highlights its potential for autonomous operation in real-world scenarios.</p>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab12/path.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab12/Trajectory.png" alt="..." /></a>
+
+                        <p>The lab was intentionally crafted to offer a broad scope for exploration and experimentation. One potential solution involved implementing localization operations each time the robot transitioned between waypoints on the trajectory. This entailed performing a 360-degree rotation to gather ToF readings, which were then used to update the Bayesian filter, akin to the methodology demonstrated in Lab 11 Localization (Real). If discrepancies arose between the robot's belief matrix and the intended waypoint, corrective actions could be taken to realign the robot's path. However, a significant challenge emerged during implementation: while the robot adeptly executed localization operations initially, the precision degraded over successive iterations. Despite meticulous troubleshooting efforts, it became evident that accumulated errors in the IMU's drift calculation, particularly at startup, resulted in inaccuracies that compromised the reliability of the ToF data. Consequently, the proposed approach proved untenable, as the robot required multiple localization operations within a single run.</p>
+                        <p>In response to this setback, a simpler yet effective alternative was adopted. The solution involved integrating the previously developed PID controllers for distance and orientation, leveraging hard-coded commands tailored to the trajectory. This approach facilitated open-loop control, wherein the robot autonomously followed predefined commands to navigate the course. During operation, the ToF and IMU PID controllers were activated alternately. The orientational control entailed in-axis rotations to maintain alignment with the trajectory, while position control was achieved by specifying reference distances to regulate the robot's proximity to obstacles. Though less intricate than the initial localization-based approach, this streamlined method offered a pragmatic solution that effectively guided the robot along the desired path with improved reliability and consistency.</p>
+
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab12/pid.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab12/code1.png" alt="..." /></a>
+                        <a href="#!"><img class="img-fluid" src="assets/img/Lab12/code2.png" alt="..." /></a>
+
+                        <h2 class="section-heading">Results</h2>
+                        <p>The actual test results depicted in the accompanying video showcase the performance of the robot within the designated map environment. Utilizing the open-loop control method, the robot operates without direct awareness of its true state, potentially leading to error accumulation over time. Despite this inherent limitation, the video demonstrates that the robot was able to roughly follow the trajectory outlined in the map. This highlights the fundamental feasibility of the implemented functionality, albeit with some deviations from the ideal path. A notable observation was that the primary source of error in the PID occurred during position control, particularly when the robot approached obstacles at certain angles. In such instances, the ToF detection was not perpendicular to the obstacle plane, resulting in larger errors and diminished positioning accuracy. This insight into the root cause of inaccuracies provides valuable guidance for refining the control algorithms and optimizing sensor positioning to enhance overall performance in future iterations.</p>
+                        <iframe width="700" height="515"
+                        src="https://www.youtube.com/embed/HUqebTfOQZ4">
+                        </iframe>
+
+                        <h2 class="section-heading">Conclusion</h2>
+                        <p>As the Fast Robots course draws to a close, I reflect on the wealth of knowledge and skills I've acquired over the twelve comprehensive labs. Throughout the course, I had the opportunity to revisit familiar tools like PID control and IMU sensors, deepening my understanding and refining my proficiency in their application. Additionally, I delved into new theoretical concepts such as the Kalman Filter and Bayesian Filter, broadening my theoretical toolkit and honing my ability to apply advanced algorithms to real-world problems. Beyond technical expertise, the course equipped me with invaluable experience in project planning from inception to execution, encompassing considerations of mechanical layout and system design framework. These hands-on experiences have not only bolstered my technical acumen but have also instilled in me a holistic approach to problem-solving and project management. I extend my heartfelt gratitude to the course staff for their unwavering support, guidance, and expertise throughout this enriching journey. Their mentorship has been instrumental in my growth and development, and I am immensely grateful for the opportunity to learn and collaborate within this dynamic learning environment.</p>
+
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/dengyutu/CU-Fast-Robot">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Dengyu Tu 2024</div>
+                        <div class="small text-center text-muted fst-italic">Robot icons created by Freepik - Flaticon</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
